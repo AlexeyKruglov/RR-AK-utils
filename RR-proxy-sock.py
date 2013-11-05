@@ -22,7 +22,6 @@ def port_reader(port,sock_qu):
         try:
           conn.send(line)
         except socket.error:
-          sock_qu.
           print "error!!!"
           exit()
       else: sock_qu.put(line)
@@ -45,7 +44,7 @@ def socket_listener(sock,qu,port):
       while True:
         data = conn.recv(4096)
         if not data: break
-        print "> \"%s\"" % data
+        print "> %s" % data
         if data=="disconnect\n":
           exit()
         port.write(data)
