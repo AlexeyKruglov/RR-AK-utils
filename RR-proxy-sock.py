@@ -55,8 +55,10 @@ def socket_reader(port):
   while True:
     conn_ok.wait()
     while True:
-      data = conn.recv(4096)
-      if not data: 
+      try:
+        data = conn.recv(4096)
+        if not data: raise socket.error
+      except (socket.error,AttributeError):
         conn_ok.clear()
         conn_bad.set()
         break
@@ -68,7 +70,7 @@ def socket_reader(port):
         exit()
       port.write(data)
     conn.close()
-    conn=None
+    #conn=None
 
 def socket_writer(sock_qu,sock_quc):
   global conn, conn_ok, conn_bad
