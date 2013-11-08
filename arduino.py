@@ -20,6 +20,7 @@ def recv_data(s):
       terminate.set()
       break
     sys.stdout.write(data_in)
+    sys.stdout.flush()
 
 def send_data(s):
   while True:

@@ -20,14 +20,14 @@ sq=collections.deque()  # buffer Arduino output since there's no permanent conne
 def port_reader(port,sock_qu,sock_quc):
   try:
     while True:
-      #line=port.readline()
-      time.sleep(0.250)
-      line="test. time=%f\n" % time.time()
+      line=port.readline()
+      #time.sleep(0.250)
+      #line="test. time=%f\n" % time.time()
       sys.stdout.write("< " + line)
       sock_qu.append(line)
       sock_quc.release()
   finally:
-    #port.close()
+    port.close()
     pass
 
 conn=None
@@ -70,7 +70,6 @@ def socket_reader(port):
         exit()
       port.write(data)
     conn.close()
-    #conn=None
 
 def socket_writer(sock_qu,sock_quc):
   global conn, conn_ok, conn_bad
@@ -79,9 +78,10 @@ def socket_writer(sock_qu,sock_quc):
     sock_quc.acquire()
     data=sock_qu.popleft()
     try:
-      #if conn==None: raise socket.error
+      #sys.stdout.write("s "+data)
       conn.sendall(data)
     except (socket.error, AttributeError):
+      #sys.stdout.write("[resend...]")
       conn_ok.clear()
       conn_bad.set()
       sock_qu.appendleft(data)
@@ -89,9 +89,9 @@ def socket_writer(sock_qu,sock_quc):
 
 
 # Open port
-#p=serial.Serial(port_name,115200)
+p=serial.Serial(port_name,115200)
 #p=os.open("testfile",os.O_WRONLY | os.O_CREAT)
-p=open("testfile","w")
+#p=open("testfile","w")
 time.sleep(0.51)
 
 # Create listening socket
@@ -113,8 +113,8 @@ def start_thread(target,args,name,daemon=False):
 
 
 # Start worker processes
-# threading.Thread(target=port_reader,args=(p,sq,sqc),name="port_reader").start()
-start_thread(target=port_reader,args=(None,sq,sqc),name="port_reader",daemon=True)
+start_thread(target=port_reader,args=(p,sq,sqc),name="port_reader",daemon=True)
+#target=port_reader,args=(None,sq,sqc),name="port_reader",daemon=True)
 start_thread(target=socket_writer,args=(sq,sqc),name="socket_writer",daemon=True)
 start_thread(target=socket_reader,args=(p,),name="socket_reader")
 start_thread(target=socket_connector,args=(s,),name="socket_connector",daemon=True)
