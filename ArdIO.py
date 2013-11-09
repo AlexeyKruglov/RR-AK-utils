@@ -12,7 +12,7 @@ class ArduinoSocketIO(io.BufferedIOBase):
   echo_out = None
   echo_in = None
 
-  def __init__(self,socket_name="/tmp/arduinoproxy", echo=False, echo_out=sys.stderr, echo_in=sys.stdout, blocking=True, timeout=None):
+  def __init__(self,socket_name="/tmp/arduinoproxy", echo=False, echo_out=sys.stderr, echo_in=sys.stderr, blocking=True, timeout=None):
     self.socket_name = socket_name
     if echo:
       self.echo_in = echo_in
@@ -34,6 +34,15 @@ class ArduinoSocketIO(io.BufferedIOBase):
   def close(self):
     self.sock.close()
 
+  def settimeout(self, timeout=None):
+    self.timeout = timeout
+    self.sock.settimeout(self.timeout)
+
+  def setblocking(self, blocking=True):
+    if blocking: self.settimeout(None)
+    else: self.settimeout(0.0)
+    self.sock.settimeout(self.timeout)
+
   def readall(self):
     return self.read(n = self.MAX_BUFFER)  # not correct, but will go
 
@@ -52,7 +61,8 @@ class ArduinoSocketIO(io.BufferedIOBase):
     if self.timeout != None and not data_in:
       raise io.BlockingIOError(errno.EAGAIN,0)
     if self.echo_in != None:
-      self.echo_in.write("> " + data_in)
+      self.echo_in.write(data_in)
+      #self.echo_in.write("> " + data_in)
       self.echo_in.flush()
     return bytes(data_in)
 
@@ -60,10 +70,11 @@ class ArduinoSocketIO(io.BufferedIOBase):
     if self.timeout>0.0:
       self.sock.settimeout(0.0)
       self.sock.settimeout(self.timeout)
-    
+
   def write(self, b):
     if self.echo_out != None:
-      self.echo_out.write("> " + data_out)
+      self.echo_out.write(b)
+      #self.echo_out.write("> " + b)
       self.echo_out.flush()
     self.sock.sendall(b)
     return len(b)
