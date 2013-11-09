@@ -20,7 +20,15 @@ sq=collections.deque()  # buffer Arduino output since there's no permanent conne
 def port_reader(port,sock_qu,sock_quc):
   try:
     while True:
-      line=port.readline()
+      try:
+        line=port.readline()
+      except serial.SerialException:
+        try: port.close()
+        except: pass
+        try: conn.close()
+        except: pass
+        die.set()
+        break
       #time.sleep(0.250)
       #line="test. time=%f\n" % time.time()
       sys.stdout.write("< " + line)
