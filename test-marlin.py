@@ -64,13 +64,11 @@ def gohome():
     print marlincmd("G92 X30")  # set logical position
     print marlincmd("G1 X0")  # Go 30mm left
   print marlincmd("G28")  # Go home
-  print marlincmd("G92 X123.30 Y0 Z0")
 
 def reset_z():
   return
   marlincmd("G1 Z2")
   marlincmd("G28 Z0")
-  marlincmd("G92 Z0")
 
 def probe_z(es="z_max", z0=0, maxz=0, minz=-5.5):  # probe vertically with z probe at z_max endstop
   marlincmd("M205 Z0.1")  # Maximum z jerk, mm/s
