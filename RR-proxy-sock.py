@@ -22,7 +22,7 @@ def port_reader(port,sock_qu,sock_quc):
     while True:
       try:
         line=port.readline()
-      except serial.SerialException:
+      except (serial.SerialException, OSError):
         try: port.close()
         except: pass
         try: conn.close()
@@ -124,7 +124,7 @@ def start_thread(target,args,name,daemon=False):
 start_thread(target=port_reader,args=(p,sq,sqc),name="port_reader",daemon=True)
 #target=port_reader,args=(None,sq,sqc),name="port_reader",daemon=True)
 start_thread(target=socket_writer,args=(sq,sqc),name="socket_writer",daemon=True)
-start_thread(target=socket_reader,args=(p,),name="socket_reader")
+start_thread(target=socket_reader,args=(p,),name="socket_reader", daemon=True)
 start_thread(target=socket_connector,args=(s,),name="socket_connector",daemon=True)
 
 die.wait()
