@@ -1,0 +1,17 @@
+R1=160
+R2=87
+Xperp=60.0
+phi1k=269
+phi2k=115
+
+# phi1=y/phi1k
+# phi2=(x-Xperp)/phi2k
+phi1(y)=y/phi1k
+phi2(x)=(x-Xperp)/phi2k
+
+x(x0,y0)=R1*cos(phi1(y0))+R2*cos(phi1(y0)+phi2(x0)-pi/2)
+y(x0,y0)=R1*sin(phi1(y0))+R2*sin(phi1(y0)+phi2(x0)-pi/2)
+
+p2skew(x)=sx*cos(phi2(x))+sy*sin(phi2(x))
+plane(x0,y0)=px*x(x0,y0)+py*y(x0,y0)
+warp(x0,y0)=pxx*x(x0,y0)**2 + pyy*y(x0,y0)**2 + 2*pxy*x(x0,y0)*y(x0,y0)
