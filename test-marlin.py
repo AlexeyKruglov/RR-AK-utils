@@ -60,7 +60,7 @@ class MarlinCmd:  # Marlin commander class
       resp2 = resp + " "
       if resp2[0:3]=="ok ":
         return out
-      if echo != None && resp2[0:len("echo:")]=="echo:":
+      if echo != None and resp2[0:len("echo:")]=="echo:":
         echo.write(resp + "\n")
       if resp2[0:len("Error:")]=="Error:":
         if check_ok:
@@ -71,8 +71,8 @@ class MarlinCmd:  # Marlin commander class
           raise RRError(cmd, "Timeout")
         return None
 
-  def set_feedrate(f):
-    self.c("G1 F%.1f" % f*60, check_ok=True)
+  def set_feedrate(self, f):
+    self.c("G1 F%.1f\n" % (f*60), check_ok=True)
 
   def go(self, x=None, y=None, z=None, wait=False):  # !!! assume absolute positioning
     cmd="G1"
@@ -116,36 +116,37 @@ class MarlinCmd:  # Marlin commander class
     self.go(z=2, wait=True)
     self.c("G28 Z0", check_ok=True)
 
-  def probe_z(self, es="z_max", z0=0, maxz=0, minz=-5.5):  # probe vertically with z probe at z_max endstop
+  def probe_z(self, es="z_max", z0=0, maxz=0, minz=-6):  # probe vertically with z probe at z_max endstop
     self.c("M205 Z0.1", check_ok=True)  # Maximum z jerk, mm/s
     self.c("M201 Z200", check_ok=True)  # Maximum z acceleration, mm/s^2
     self.home_z()
     step=0.5
-    delay=0.2
+    delay=0.1
     cz=maxz
     # self.c("G1 Z%.2f" % cz, check_ok=True)
-    self.go(z=cz)
+    self.go(z=cz, wait=True)
     time.sleep(delay)
     while not self.get_es()[es] and cz-step>=minz:
       cz -= step
       #print cz
       # self.c("G1 Z%.2f" % cz, check_ok=True)
-      self.go(z=cz)
+      self.go(z=cz, wait=True)
       time.sleep(delay)
 
     if self.get_es()[es]:
       cz += step
       self.home_z()
-      step = 2/46.3
-      cz += step*2
+      delay = 0.05
+      step = 1/46.3
+      cz += step*4
       # self.c("G1 Z%.2f" % cz, check_ok=True)
-      self.go(z=cz)
+      self.go(z=cz, wait=True)
       time.sleep(delay)
       while not self.get_es()[es] and cz-step>=minz:
         cz -= step
         #print cz
         # self.c("G1 Z%.2f" % cz, check_ok=True)
-        self.go(z=cz)
+        self.go(z=cz, wait=True)
         time.sleep(delay)
 
     # self.c("G1 Z%.2f" % z0, check_ok=True)
@@ -180,23 +181,42 @@ def probe1(x,y):
   sys.stdout.flush()
   return z0
 
+import math
+
 def probe_series_r(r):
   #rr.go(x=r)
   step_y=45
-  y=20
+
+  R1=160
+  R2=87
+  Xperp=60.0
+  phi1k=269
+  phi2k=115
+  phi2=math.pi/2+(r-Xperp)/phi2k
+  R=math.sqrt(R1**2+R2**2-2*R1*R2*math.cos(phi2))/phi1k
+
+  step_y=10/R
+  if r>=45: y = -10
+  else: y = 20
   while y<=310:
     probe1(r,y)
     y+=step_y
+  probe1(r,310)
+  sys.stdout.write("\n")
+  sys.stdout.flush()
 
 def probe_scan():
   step_x=32
+  step_x=10 *115./87.
   x=133
   while x<=133 and x>=-30:
     probe_series_r(x)
     x-=step_x
+  probe_series_r(-30)
 
 try:
   probe_scan()
+  #probe_series_r(-17)
 except KeyboardInterrupt:
   pass
 
@@ -210,4 +230,5 @@ except KeyboardInterrupt:
 
 rr.go(z=20)
 rr.go(x=123, y=20)
+rr.go(x=123, y=-5)
 rr.close()
