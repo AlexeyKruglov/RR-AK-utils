@@ -14,4 +14,6 @@ y(x0,y0)=R1*sin(phi1(y0))+R2*sin(phi1(y0)+phi2(x0)-pi/2)
 
 p2skew(x)=sx*cos(phi2(x))+sy*sin(phi2(x))
 plane(x0,y0)=px*x(x0,y0)+py*y(x0,y0)
-warp(x0,y0)=pxx*x(x0,y0)**2 + pyy*y(x0,y0)**2 + 2*pxy*x(x0,y0)*y(x0,y0)
+plane2(x0,y0)=cos(p2a)*x(x0,y0)+sin(p2a)*y(x0,y0)
+#warp(x0,y0)=pxx*x(x0,y0)**2 + pyy*y(x0,y0)**2 + 2*pxy*x(x0,y0)*y(x0,y0)
+warp(x0,y0)=pxx*x(x0,y0)**2 - pxx*y(x0,y0)**2 + 2*pxy*x(x0,y0)*y(x0,y0)  # zero avg curvature
