@@ -8,7 +8,7 @@ set size 0.5,1
 
 load "./coord.gpinc"
 
-file="probe3.dat"
+if(!exists("file")) file="probe3.dat"
 
 #splot file u (x($1,$2)):(y($1,$2)):3
 
@@ -19,16 +19,24 @@ file="probe3.dat"
 #splot file u (x($1,$2)):(y($1,$2)):($3-(p2skew($1)+plane($1,$2)+z0))
 
 f(x,y)=p2skew(x)+plane(x,y)+warp(x,y)+z0 + wm*(ws*sin(2*pi*y/wp)+wc*cos(2*pi*y/wp))*plane2(x,y)
-wm=1
+if(!exists("wm")) wm=1
 
-#ws=0.00001
-#wc=0.00001
+if(!exists("initw") || initw) wp=86; ws=0.00001; wc=0.00001; p2a=1; initw=0
 
 ##fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,pyy,z0
-#fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
-#wp=87
-#ws=0.00001
-#wc=0.00001
-#fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
 #splot [-40:140] [-20:320] file u ($1):($2):($3-f($1,$2))
+
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0,ws,wc,p2a,wp
+splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
