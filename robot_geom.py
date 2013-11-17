@@ -11,7 +11,7 @@ class RobotGeometryAK(RobotGeometryBase):
   R1=160      # +-10, mm
   R2=87       # +-10, mm
   Xperp=60.0  # +-5, mm
-  Yperp=self.phi1k*pi/2
+  Yperp=269*pi/2
   phi1k=269   # +-5, mm
   phi2k=115   # +-5, mm
 
@@ -67,16 +67,17 @@ class RobotGeometryAK(RobotGeometryBase):
     r2=x**2+y**2
     r=sqrt(r2)
     phi=atan2(y,x)
-    psi1=acos( (self.R1**2+r2-self.R2**2)/(2*self.R1*r))
-    psi2=acos(-(self.R1**2+self.R2**2-r2)/(2*self.R2*self.R1))
+    psi1= acos( (self.R1**2+r2-self.R2**2)/(2*self.R1*r))
+    psi2=-acos(-(self.R1**2+self.R2**2-r2)/(2*self.R2*self.R1))
     X=(psi2+pi/2)*self.phi2k + self.Xperp
     Y=(phi+psi1-pi/2)*self.phi1k + self.Yperp
     return (X,Y,Z)
 
   def c2r(self, x,y,z):
-    X,Y,Z1=c2r_approx(x,y,z)
-    return (X, Y, Z1+self.table_z0(X,Y))
+    X,Y,Z1=self.c2r_approx(x,y,z)
+    print "c2r: X=%f Y=%f" % (X,Y)
+    return (X, Y, Z1+self.table_Z0(X,Y))
 
   def r2c(self, X,Y,Z):
-    x,y,z=r2c_approx(X, Y, Z - self.table_z0(X,Y))
+    x,y,z=self.r2c_approx(X, Y, Z - self.table_Z0(X,Y))
     return (x,y,z)

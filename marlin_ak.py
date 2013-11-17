@@ -1,7 +1,7 @@
 # Communication with Marlin firmware running on AK's printer
 
 import ArdIO
-import time,io
+import time,io,sys
 import robot_geom
 
 class RRError(Exception):
@@ -77,27 +77,31 @@ class MarlinCmd:  # Marlin commander class
 
   def go(self, x=None, y=None, z=None, f=None, wait=False):  # !!! assume absolute positioning
     cmd="G1"
-    if x != None: cmd += " X%.2f" % x
-    if y != None: cmd += " Y%.2f" % y
-    if z != None: cmd += " Z%.2f" % z
-    if f != None: cmd += " F%.2f" % f
+    if x != None: cmd += " X%.3f" % x
+    if y != None: cmd += " Y%.3f" % y
+    if z != None: cmd += " Z%.3f" % z
+    if f != None: cmd += " F%.1f" % (f*60)
     self.c(cmd, check_ok=True)
     if wait:
       self.wait()
 
   def get_pos(self): # return position as a 3-tuple
     # Will return 4-tuple or smth else in the future
-    st=self.c("M114", check_ok=True)  # Get position
+    l=self.c("M114", check_ok=True)  # Get position
     try:
       l0=l[0]
-      l0 = l0[0:l.index(" ")]
+      #print l0
+      l0 = l0[0:l0.index(" ")]
+      #print l0
       #  X:0.00Y:0.00Z:0.00E:0.00
       l0 = l0.split(":")[1:]
+      #print l0
       l0 = map(lambda x: float(x.rstrip("XYZE")),l0)
-      if length(l0) != 4: raise
+      #print l0
+      if len(l0) != 4: raise
       return tuple(l0[0:3])
-    except:
-      raise RRError("M114","cannot parse: " + "|".join(l))
+    except Exception as e:
+      raise RRError("M114","cannot parse: " + "|".join(l) + " exc: " + str(e))
 
   def get_es(self): # return dict with endstop states
     st=self.c("M119", check_ok=True)  # Get endstop status
@@ -129,7 +133,7 @@ class MarlinCmd:  # Marlin commander class
     self.c("G28", check_ok=True)  # Go home
 
   def home_z(self):
-    self.go(z=2, wait=True)
+    MarlinCmd.go(self, z=2, wait=True)
     self.c("G28 Z0", check_ok=True)
 
   def probe_z(self, es="z_max", z0=0, maxz=0, minz=-6):  # probe vertically with z probe at z_max endstop
@@ -179,48 +183,60 @@ class MarlinCmdG(MarlinCmd):  # wrapper
   homed = False
   f=25  # default feedrate = 25 mm/sec
   geom=robot_geom.RobotGeometryAK()
-  maxd=1  # mm
-  debug = False or True
+  maxd=1.5  # mm
+  debug = False #or True
 
-  def __init__(self, check_ok = True, timeout=None, echo=sys.stderr):  # check_ok = raise RRError on non-ok (Error) command results
-    MarlinCmd.__init(self, check_ok=check_ok, timeout=timeout, echo=echo)
+  #def __init__(self, check_ok = True, timeout=None, echo=sys.stderr):  # check_ok = raise RRError on non-ok (Error) command results
+  #  MarlinCmd.__init__(self, check_ok=check_ok, timeout=timeout, echo=echo)
 
   def home(self):
     MarlinCmd.home(self)
     self.wait()
-    self.cx, self.cy, self.cz = self.geom.r2c(MarlinCmd.get_pos(self))
-    self.homed = True
+    time.sleep(0.5) # Oscillation dampling
+    self.pick_pos()
 
   def home_z(self):
     MarlinCmd.home_z(self)
     self.wait()
-    self.cx, self.cy, self.cz = self.geom.r2c(MarlinCmd.get_pos(self))
+    self.pick_pos(set_homed = False)
+
+  def pick_pos(self, set_homed = True):  # pick current position with M144 command
+    X,Y,Z = MarlinCmd.get_pos(self)
+    self.cx, self.cy, self.cz = self.geom.r2c(X,Y,Z)
+    if set_homed: self.homed = True
 
   def set_feedrate(self, f):
     self.f=f
     # Do not sent command since real/raw feedrate ratio depends on travel direction
 
-  def goraw(self, *args):
+  def goraw(self, *args, **keys):
     if not self.debug: 
-      MarlinCmd.go(self, *args)
-    else 
-      sys.stderr.write("Go %f,%f,%f, %f\n" % (x,y,z,f))
+      MarlinCmd.go(self, *args, **keys)
+    else:
+      #sys.stderr.write("Go %s\n" % str(args))
+      sys.stderr.write("Go %f,%f,%f, %f\n" % (keys["x"],keys["y"],keys["z"],keys["f"]))
 
   def get_pos(self): # return position as a 3-tuple
     return (self.cx, self.cy, self.cz)
 
-  def go(self, x=self.cx, y=self.cy, z=self.cz, f=self.f, wait=False):  # !!! assume absolute positioning
+  def go(self, x=None, y=None, z=None, f=None, wait=False):  # !!! assume absolute positioning
     if not self.homed:
       raise RRError("go", "must home() before go()")
+    if x==None: x=self.cx
+    if y==None: y=self.cy
+    if z==None: z=self.cz
+    if f==None: f=self.f
     self.f = f
-    cx,cy,cz = x,y,z
+    cx,cy,cz = self.cx,self.cy,self.cz
     cX,cY,cZ = self.geom.c2r(cx,cy,cz)
     dx, dy, dz = x-cx, y-cy, z-cz
     d = math.sqrt(dx**2 + dy**2 + dz**2)
-    n = math.ceil(d/self.maxd)
+    n = int(math.ceil(d/self.maxd))
+    print "n=", n
     if n<1: n=1
     dx, dy, dz = dx/n, dy/n, dz/n
     d /= n
+    self.goraw(x=cX, y=cY, z=cZ, f=self.f, wait = False)  # wait only after the last segment
     for i in range(n): 
       cx+=dx
       cy+=dy
@@ -228,6 +244,7 @@ class MarlinCmdG(MarlinCmd):  # wrapper
       pX,pY,pZ = cX,cY,cZ
       cX,cY,cZ = self.geom.c2r(cx,cy,cz)
       d_raw = math.sqrt((cX-pX)**2 + (cY-pY)**2 + (cZ-pZ)**2)
+      print "d=%f d_raw=%f" % (d,d_raw)
 
-      self.goraw(x=cx, y=cy, z=cz, f=self.f * d/d_raw, wait = i == n-1 and wait)  # wait only after the last segment
+      self.goraw(x=cX, y=cY, z=cZ, f=self.f * (d+1e-5)/(d_raw+1e-5), wait = i == n-1 and wait)  # wait only after the last segment
     self.cx,self.cy,self.cz = x,y,z
