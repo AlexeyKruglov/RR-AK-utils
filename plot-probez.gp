@@ -1,10 +1,11 @@
 set pm3d
 set palette
 unset surface
+set macros
 
-set xrange [50:350]
-set yrange [-100:200]
-set size 0.5,1
+set xrange [0:250]
+set yrange [-100:150]
+set size 0.455,1
 
 load "./coord.gpinc"
 
@@ -23,20 +24,25 @@ if(!exists("wm")) wm=1
 
 if(!exists("initw") || initw) wp=86; ws=0.00001; wc=0.00001; p2a=1; initw=0
 
-##fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,pyy,z0
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+#var1="sx,sy,px,py,pxx,pxy"
+var1="px,py,pxx,pxy"
+#var2="ws,wc,p2a,wp"
+var2="ws,wc,wp"
+
+##fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var1,z0
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var1,z0
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var2
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
 #splot [-40:140] [-20:320] file u ($1):($2):($3-f($1,$2))
 
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var1,z0
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var2,z0
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var1,z0
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via ws,wc,p2a,z0,wp
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var2,z0
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))
-fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via sx,sy,px,py,pxx,pxy,z0,ws,wc,p2a,wp
+fit [-1e3:1e3] [-1e3:1e3] f(x,y) file u 1:2:3:(1) via @var1,z0,@var2
 splot file u (x($1,$2)):(y($1,$2)):($3-f($1,$2))

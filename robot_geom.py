@@ -8,37 +8,54 @@ class RobotGeometryBase:
 
 class RobotGeometryAK(RobotGeometryBase):
   # Very approximate yet:
-  R1=160      # +-10, mm
-  R2=87       # +-10, mm
-  Xperp=60.0  # +-5, mm
-  Yperp=269*pi/2
-  phi1k=269   # +-5, mm
-  phi2k=115   # +-5, mm
+  #R1=160      # +-10, mm
+  #R2=87       # +-10, mm
+  #Xperp=60.0  # +-5, mm
+  Yperp=272.2*pi/2
+  #phi1k=269   # +-5, mm
+  #phi2k=115   # +-5, mm
+  R1=160.8311
+  R2=76.435
+  Xperp=90.8311
+  phi1k=272.2
+  phi2k=115.573
 
   # additive const: z shift at x=y=0
-  z0  = -6.11831  # mm(Z)
+  #z0  = -6.11831  # mm(Z)
+  z0  = -5.44919
 
   def __init__(self):
     pass
 
   def table_Z0(self, X,Y):
-    # Fit results by plot-probe.gp with probe3.dat:
-    # tilt of the upper disc
-    sx  = 0.543657  # mm(Z)
-    sy  = 0.836719  # mm(Z)
-    # tilt of the lower disc (table)
-    px  = 0.00931464  # 1
-    py  = 0.00325368  # 1
-    # table warp (mine is warped)
-    pxx = -2.74275e-05  # 1/mm(xy)
-    pxy = -4.42087e-06  # 1/mm(xy)
-    # table wheel excentricity sine and cosine components
-    ws  = 0.000251083  # 1
-    wc  = 0.000394223  # 1
-    # position of the table support wire
-    p2a = 0.812886  # rad
-    # table wheel turn period along Y
-    wp  = 86.8356  # mm(Y)
+    ## Fit results by plot-probe.gp with probe3.dat:
+    ## tilt of the upper disc
+    #sx  = 0.543657  # mm(Z)
+    #sy  = 0.836719  # mm(Z)
+    ## tilt of the lower disc (table)
+    #px  = 0.00931464  # 1
+    #py  = 0.00325368  # 1
+    ## table warp (mine is warped)
+    #pxx = -2.74275e-05  # 1/mm(xy)
+    #pxy = -4.42087e-06  # 1/mm(xy)
+    ## table wheel excentricity sine and cosine components
+    #ws  = 0.000251083  # 1
+    #wc  = 0.000394223  # 1
+    ## position of the table support wire
+    #p2a = 0.812886  # rad
+    ## table wheel turn period along Y
+    #wp  = 86.8356  # mm(Y)
+
+    sx              = 0.942001
+    sy              = 0.961247
+    px              = 0.00430328
+    py              = 0.00109359
+    pxx             = -2.71321e-05
+    pxy             = 3.09371e-06
+    ws              = 0.000302164
+    wc              = 0.000452948
+    p2a             = 0.875118
+    wp              = 86.7701
 
     phi1=Y/self.phi1k
     phi2=(X-self.Xperp)/self.phi2k-pi/2

@@ -3,7 +3,7 @@
 # Probe table's z position across the table
 
 import marlin_ak
-import time
+import time,sys
 import math
 
 rr = marlin_ak.MarlinCmd()
@@ -25,19 +25,19 @@ def probe1(x,y):
 
 def probe_series_r(r):
   #rr.go(x=r)
-  step_y=45
+  #step_y=45
 
-  R1=160
-  R2=87
-  Xperp=60.0
-  phi1k=269
-  phi2k=115
+  R1=161.
+  R2=76.
+  Xperp=91.
+  phi1k=269.
+  phi2k=115.
   phi2=math.pi/2+(r-Xperp)/phi2k
   R=math.sqrt(R1**2+R2**2-2*R1*R2*math.cos(phi2))/phi1k
 
-  step_y=10/R
+  step_y=20/R
   if r>=45: y = -10
-  else: y = 20
+  else: y = 25
   while y<=310:
     probe1(r,y)
     y+=step_y
@@ -46,17 +46,17 @@ def probe_series_r(r):
   sys.stdout.flush()
 
 def probe_scan():
-  step_x=32
-  step_x=10 *115./87.
-  x=133
-  while x<=133 and x>=-30:
+  #step_x=24
+  step_x=20 *115./76.
+  x=143
+  while x<=143 and x>=-30:
     probe_series_r(x)
     x-=step_x
   probe_series_r(-30)
 
 try:
   probe_scan()
-  #probe_series_r(-17)
+  #probe_series_r(-30)
 except KeyboardInterrupt:
   pass
 

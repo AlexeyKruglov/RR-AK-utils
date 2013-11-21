@@ -136,7 +136,7 @@ class MarlinCmd:  # Marlin commander class
     MarlinCmd.go(self, z=2, wait=True)
     self.c("G28 Z0", check_ok=True)
 
-  def probe_z(self, es="z_max", z0=0, maxz=0, minz=-6):  # probe vertically with z probe at z_max endstop
+  def probe_z(self, es="z_max", z0=0, maxz=0, minz=-8):  # probe vertically with z probe at z_max endstop
     self.c("M205 Z0.1", check_ok=True)  # Maximum z jerk, mm/s
     self.c("M201 Z200", check_ok=True)  # Maximum z acceleration, mm/s^2
     self.home_z()
@@ -183,7 +183,7 @@ class MarlinCmdG(MarlinCmd):  # wrapper
   homed = False
   f=25  # default feedrate = 25 mm/sec
   geom=robot_geom.RobotGeometryAK()
-  maxd=1.5  # mm
+  maxd=0.5  # mm
   debug = False #or True
 
   #def __init__(self, check_ok = True, timeout=None, echo=sys.stderr):  # check_ok = raise RRError on non-ok (Error) command results
