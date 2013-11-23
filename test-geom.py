@@ -10,7 +10,8 @@ from marlin_ak import *
 import time
 
 rr=MarlinCmdG()
-rr.c("M205 Z10") # Max Z jerk, mm/sec
+#rr.c("M205 Z10") # Max Z jerk, mm/sec
+rr.c("M205 X3 Z10") # Max Z jerk, mm/sec
 #rr.debug = True
 rr.set_feedrate(100)
 
@@ -21,7 +22,7 @@ rr.home_z()
 p = rr.get_pos()
 print p
 print p[2]-4
-z0=3.3
+z0=-0.3
 z1=z0+5
 
 def peano(n,o0,o1, x0,x1,y0,y1):
@@ -41,7 +42,7 @@ def peano(n,o0,o1, x0,x1,y0,y1):
 
 o=(182.023,-73.438,6.217)
 
-p=(o[0]-20,o[1]+80,p[2])
+p=(o[0]-0,o[1]+20,p[2])
 #p=(p[0]+20,p[1]+0,p[2])
 rr.go(x=p[0],y=p[1],z=z1)
 peano(4,p[0],p[1], -20.,0., 0.,20.)
