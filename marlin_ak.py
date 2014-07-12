@@ -91,14 +91,14 @@ class MarlinCmd:  # Marlin commander class
     try:
       l0=l[0]
       #print l0
-      l0 = l0[0:l0.index(" ")]
+      l0 = l0[0:l0.index(" Count")]
       #print l0
       #  X:0.00Y:0.00Z:0.00E:0.00
       l0 = l0.split(":")[1:]
       #print l0
-      l0 = map(lambda x: float(x.rstrip("XYZE")),l0)
+      l0 = map(lambda x: float(x.rstrip("XYZE ")),l0)
       #print l0
-      if len(l0) != 4: raise
+      if len(l0) < 4: raise
       return tuple(l0[0:3])
     except Exception as e:
       raise RRError("M114","cannot parse: " + "|".join(l) + " exc: " + str(e))
