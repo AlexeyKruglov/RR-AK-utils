@@ -1,0 +1,3 @@
+RAMPS-thermistor	Hg-thermometer
+26.3	26.7
+40.5	40.4
