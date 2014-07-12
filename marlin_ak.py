@@ -120,20 +120,20 @@ class MarlinCmd:  # Marlin commander class
     es=self.get_es()
     if es["z_min"]:  # too low, go up
       self.c("G92 Z0", check_ok=True)  # set logical position
-      self.c("G1 Z30", check_ok=True)  # Go 30mm up
+      self.c("G1 Z30 F1000", check_ok=True)  # Go 30mm up
       self.wait()
     if es["y_min"]:  # too close, go deeper
       self.c("G92 Y0", check_ok=True)  # set logical position
-      self.c("G1 Y30", check_ok=True)  # Go 30mm deep
+      self.c("G1 Y30 F1000", check_ok=True)  # Go 30mm deep
       self.wait()
     if es["x_max"]:  # too right, go left
       self.c("G92 X30", check_ok=True)  # set logical position
-      self.c("G1 X0", check_ok=True)  # Go 30mm left
+      self.c("G1 X0 F1000", check_ok=True)  # Go 30mm left
       self.wait()
     self.c("G28", check_ok=True)  # Go home
 
   def home_z(self):
-    MarlinCmd.go(self, z=2, wait=True)
+    MarlinCmd.go(self, z=2, f=16.6666, wait=True)
     self.c("G28 Z0", check_ok=True)
 
   def probe_z(self, es="z_max", z0=0, maxz=0, minz=-8):  # probe vertically with z probe at z_max endstop
