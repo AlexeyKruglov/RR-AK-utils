@@ -36,9 +36,12 @@ try:
       rr.go(x=p[0], y=p[1]-size, z=z)
       rr.go(x=p[0], y=p[1]+size, z=z)
       rr.go(x=p[0], y=p[1], z=30)
-    elif cmd[0:1]=="z":  # go z=arg
+    elif cmd[0:1]=="Z":  # go z=arg
       z=float(cmd[1:])
       rr.go(z=z)
+    elif cmd[0:1]=="z":  # go z=arg
+      z=float(cmd[1:])
+      rr.goraw(z=z)
     elif cmd[0:1]=="x":  # go x=arg
       x=float(cmd[1:])
       rr.goraw(x=x)
@@ -47,6 +50,8 @@ try:
       rr.goraw(y=y)
     elif cmd[0:1]=="h":  # home
       rr.home()
+    elif cmd[0:1]=="H":  # home z
+      rr.home_z()
     else:  # go z = z+arg
       dz=float(cmd)
       z=p[2]+dz
