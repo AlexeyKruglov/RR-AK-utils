@@ -36,16 +36,22 @@ try:
       rr.go(x=p[0], y=p[1]-size, z=z)
       rr.go(x=p[0], y=p[1]+size, z=z)
       rr.go(x=p[0], y=p[1], z=30)
-    elif cmd[0:1]=="Z":  # go z=arg
+    elif cmd[0:1]=="Z":  # go z=arg (Cartesian)
       z=float(cmd[1:])
       rr.go(z=z)
-    elif cmd[0:1]=="z":  # go z=arg
+    elif cmd[0:1]=="X":  # go x=arg (Cartesian)
+      x=float(cmd[1:])
+      rr.go(x=x)
+    elif cmd[0:1]=="Y":  # go y=arg (Cartesian)
+      y=float(cmd[1:])
+      rr.go(y=y)
+    elif cmd[0:1]=="z":  # go Z=arg
       z=float(cmd[1:])
       rr.goraw(z=z)
-    elif cmd[0:1]=="x":  # go x=arg
+    elif cmd[0:1]=="x":  # go X=arg
       x=float(cmd[1:])
       rr.goraw(x=x)
-    elif cmd[0:1]=="y":  # go y=arg
+    elif cmd[0:1]=="y":  # go Y=arg
       y=float(cmd[1:])
       rr.goraw(y=y)
     elif cmd[0:1]=="h":  # home
