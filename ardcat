@@ -1,0 +1,3 @@
+#! /bin/sh
+
+nc -U /tmp/arduinoproxy
