@@ -1,0 +1,50 @@
+#! /bin/sh
+
+# assume home pos x=123.3, y=0
+
+./ard G92 E0
+./ard G1 Y5 F1000 Z-8.2
+
+# 123.3 0  -8.2
+# 123.3 50 -8.2
+# 60 0 -8.5
+# 60 50 -8.6
+
+# heat to 215 C #and wait 15 sec
+./ard M104 S182
+#./ard G4 P15000
+sleep 9.3s
+
+# go 5mm in 15sec -> 20mm/min while init. heating
+./ard G1 X123.3 Y0 Z-8.2 F20
+sleep 14.3s
+
+./ard M400
+#./ard M203 E15
+date
+
+# extrude ~45mm(real)=63.3mm(logical) -> 4.5mm in -> 18 sec -> 211mm(log)/min motion
+./ard G1 X60 Z-8.5 E4.5 F211
+sleep 17.3s
+
+## wait 2 sec
+#./ard G4 P2000
+
+## retract 5 mm
+#./ard M203 E1
+#./ard G1 E1
+#./ard M104 S80
+
+# retract 0.25mm
+#./ard G1 E9.75
+#sleep 0.9666s
+
+# drop temp to 60(at sensor)
+#./ard M400
+./ard G4 P2000
+
+./ard M400
+./ard G1 Z0 F1000
+
+./ard M400
+./ard M104 S60

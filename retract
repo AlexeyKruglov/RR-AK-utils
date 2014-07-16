@@ -1,0 +1,18 @@
+#! /bin/sh
+
+./ard M302
+./ard M400
+./ard M203 E2
+./ard G92 E0
+
+#./ard M109 S60
+#./ard G4 P30000
+#sleep 30s
+
+./ard M104 S176
+#sleep 15.4s
+./ard G4 P16000
+./ard G1 E-3
+
+./ard M400
+./ard M104 S80

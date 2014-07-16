@@ -1,0 +1,58 @@
+#! /bin/sh
+
+# heat to 215 C #and wait 15 sec
+./ard M104 S182
+#./ard G4 P15000
+sleep 24.3s
+
+# move closer
+#./ard M203 E1
+#./ard G1 E-1
+#./ard M400
+#./ard M203 E0.2
+#./ard G1 E-0.5
+#sleep 1.8s
+
+# wait 1 sec
+#./ard G4 P1000
+
+# exrtude 0.5 mm at 0.333
+#./ard M105
+#./ard M400
+#./ard M203 E0.1
+#./ard G1 E0.25
+#sleep 1.8s
+
+#./ard M400
+#./ard M203 E0.75
+#./ard G1 E0.5
+#sleep 0.9s
+
+# show temp
+#./ard M105
+#./ard G4 P10000
+
+# extrude 3 mm at 0.25 mm/sec
+#./ard M105
+./ard M400
+#./ard M203 E15
+date
+./ard G1 E3 F15
+sleep 11.3s
+
+## wait 2 sec
+#./ard G4 P2000
+
+## retract 5 mm
+#./ard M203 E1
+#./ard G1 E1
+#./ard M104 S80
+
+# retract 0.25mm
+#./ard G1 E9.75
+#sleep 0.9666s
+
+# drop temp to 60(at sensor)
+./ard M400
+./ard G4 P2000
+./ard M104 S60
