@@ -246,5 +246,5 @@ class MarlinCmdG(MarlinCmd):  # wrapper
       d_raw = math.sqrt((cX-pX)**2 + (cY-pY)**2 + (cZ-pZ)**2)
       print "d=%f d_raw=%f" % (d,d_raw)
 
-      self.goraw(x=cX, y=cY, z=cZ, f=self.f * (d+1e-5)/(d_raw+1e-5), wait = i == n-1 and wait)  # wait only after the last segment
     self.cx,self.cy,self.cz = x,y,z
+      self.goraw(x=cX, y=cY, z=cZ, f=self.f * (d_raw+1e-5)/(d+1e-5), wait = wait and i == n-1)  # wait only after the last segment
