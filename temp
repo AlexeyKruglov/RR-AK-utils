@@ -1,0 +1,4 @@
+#! /bin/sh
+
+echo>>temperature.log
+while true; do ./ard M105 2>&1 | awk '{if(a!="") print a; a=b; b=$0}; END {if(a!="> M105" && a!="") { print a ORS b} else { gsub(":",": ",b); gsub("/","/ ",b); "/bin/date +%s.%N" |getline ts; print ts "\t" b} }' |tee -a temperature.log; done
