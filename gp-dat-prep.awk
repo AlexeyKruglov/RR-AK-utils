@@ -21,11 +21,12 @@ function out_range(l,r) {
     return
   }
   m=int((l+r+1.5)/2)
-  print "n<"m"?"
+  print "(n<"m"?"
   out_range(l,m-1)
   print ":"
   m=int((l+r+1.5)/2)
   out_range(m,r)
+  print ")"
 }
 
 END {
@@ -36,4 +37,5 @@ END {
     out_range(0,rown-1)
     print eol
   }
+  print "# rown=" rown
 }
