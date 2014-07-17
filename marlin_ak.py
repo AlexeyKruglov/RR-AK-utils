@@ -14,6 +14,8 @@ class MarlinCmd:  # Marlin commander class
   timeout = None
   echo = None
 
+  extrude=True  # set to False to prevent extrusion
+
   def __init__(self, check_ok = True, timeout=None, echo=sys.stderr):  # check_ok = raise RRError on non-ok (Error) command results
     self.check_ok = check_ok
     self.timeout = timeout
@@ -75,11 +77,12 @@ class MarlinCmd:  # Marlin commander class
   def set_feedrate(self, f):
     self.c("G1 F%.1f\n" % (f*60), check_ok=True)
 
-  def go(self, x=None, y=None, z=None, f=None, wait=False):  # !!! assume absolute positioning
+  def go(self, x=None, y=None, z=None, e=None, f=None, wait=False):  # !!! assume absolute positioning
     cmd="G1"
     if x != None: cmd += " X%.3f" % x
     if y != None: cmd += " Y%.3f" % y
     if z != None: cmd += " Z%.3f" % z
+    if e != None and self.extrude: cmd += " E%.3f" % e
     if f != None: cmd += " F%.1f" % (f*60)
     self.c(cmd, check_ok=True)
     if wait:
@@ -176,10 +179,11 @@ class MarlinCmd:  # Marlin commander class
 import math
 
 # Not reenterant!
-class MarlinCmdG(MarlinCmd):  # wrapper 
+class MarlinCmdG(MarlinCmd):  # wrapper
   cx=0
   cy=0
   cz=0
+  ce=0   # !!!!!!!!!!!!!!!!! assumes E=0 every start!  FIX IT!!!!!
   homed = False
   f=25  # default feedrate = 25 mm/sec
   geom=robot_geom.RobotGeometryAK()
@@ -200,7 +204,7 @@ class MarlinCmdG(MarlinCmd):  # wrapper
     self.wait()
     self.pick_pos(set_homed = False)
 
-  def pick_pos(self, set_homed = True):  # pick current position with M144 command
+  def pick_pos(self, set_homed = True):  # pick current position with M114 command
     X,Y,Z = MarlinCmd.get_pos(self)
     self.cx, self.cy, self.cz = self.geom.r2c(X,Y,Z)
     if set_homed: self.homed = True
@@ -219,32 +223,34 @@ class MarlinCmdG(MarlinCmd):  # wrapper
   def get_pos(self): # return position as a 3-tuple
     return (self.cx, self.cy, self.cz)
 
-  def go(self, x=None, y=None, z=None, f=None, wait=False):  # !!! assume absolute positioning
+  def go(self, x=None, y=None, z=None, e=None, f=None, wait=False):  # !!! assume absolute positioning
     if not self.homed:
       raise RRError("go", "must home() before go()")
     if x==None: x=self.cx
     if y==None: y=self.cy
     if z==None: z=self.cz
+    if e==None: e=self.ce
     if f==None: f=self.f
     self.f = f
-    cx,cy,cz = self.cx,self.cy,self.cz
+    cx,cy,cz,ce = self.cx,self.cy,self.cz,self.ce
     cX,cY,cZ = self.geom.c2r(cx,cy,cz)
-    dx, dy, dz = x-cx, y-cy, z-cz
+    dx, dy, dz, de = x-cx, y-cy, z-cz, e-ce
     d = math.sqrt(dx**2 + dy**2 + dz**2)
     n = int(math.ceil(d/self.maxd))
-    print "n=", n
+    #print "n=", n
     if n<1: n=1
-    dx, dy, dz = dx/n, dy/n, dz/n
+    dx, dy, dz, de = dx/n, dy/n, dz/n, de/n
     d /= n
-    self.goraw(x=cX, y=cY, z=cZ, f=self.f, wait = False)  # wait only after the last segment
+    self.goraw(x=cX, y=cY, z=cZ, e=ce, f=self.f, wait = False)  # wait only after the last segment
     for i in range(n): 
       cx+=dx
       cy+=dy
       cz+=dz
+      ce+=de
       pX,pY,pZ = cX,cY,cZ
       cX,cY,cZ = self.geom.c2r(cx,cy,cz)
       d_raw = math.sqrt((cX-pX)**2 + (cY-pY)**2 + (cZ-pZ)**2)
-      print "d=%f d_raw=%f" % (d,d_raw)
+      #print "d=%f d_raw=%f" % (d,d_raw)
 
-    self.cx,self.cy,self.cz = x,y,z
-      self.goraw(x=cX, y=cY, z=cZ, f=self.f * (d_raw+1e-5)/(d+1e-5), wait = wait and i == n-1)  # wait only after the last segment
+      self.goraw(x=cX, y=cY, z=cZ, e=ce, f=self.f * (d_raw+1e-5)/(d+1e-5), wait = wait and i == n-1)  # wait only after the last segment
+    self.cx,self.cy,self.cz,self.ce = x,y,z,e
