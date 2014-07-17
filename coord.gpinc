@@ -16,13 +16,29 @@ Xperp=90.8311
 phi1k=272.2
 phi2k=115.573
 
+Xperp_2=Xperp
+R2_2=R2
+
+Y0=150.
+xx0=-200.
+yy0=-10.
+#Y0=0.
+#xx0=0.
+#yy0=0.
+
+R2i(i)=(i==1)?R2:R2_2
+Xperpi(i)=(i==1)?Xperp:Xperp_2
+
 # phi1=y/phi1k
 # phi2=(x-Xperp)/phi2k
-phi1(y)=y/phi1k
-phi2(x)=(x-Xperp)/phi2k
+phi1(y)=(y-Y0)/phi1k
+phi2i(x,i)=(x-Xperpi(i))/phi2k
+phi2(x)=phi2i(x,1)
 
-x(x0,y0)=R1*cos(phi1(y0))+R2*cos(phi1(y0)+phi2(x0)-pi/2)
-y(x0,y0)=R1*sin(phi1(y0))+R2*sin(phi1(y0)+phi2(x0)-pi/2)
+xi(x0,y0,i)=R1*cos(phi1(y0))+R2i(i)*cos(phi1(y0)+phi2i(x0,i)-pi/2)+xx0
+yi(x0,y0,i)=R1*sin(phi1(y0))+R2i(i)*sin(phi1(y0)+phi2i(x0,i)-pi/2)+yy0
+x(x0,y0)=xi(x0,y0,1)
+y(x0,y0)=yi(x0,y0,1)
 
 p2skew(x)=sx*cos(phi2(x))+sy*sin(phi2(x))
 plane(x0,y0)=px*x(x0,y0)+py*y(x0,y0)
