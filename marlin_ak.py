@@ -14,7 +14,7 @@ class MarlinCmd:  # Marlin commander class
   timeout = None
   echo = None
 
-  extrude=True  # set to False to prevent extrusion
+  extrude=False  # set to False to prevent extrusion
 
   def __init__(self, check_ok = True, timeout=None, echo=sys.stderr):  # check_ok = raise RRError on non-ok (Error) command results
     self.check_ok = check_ok
