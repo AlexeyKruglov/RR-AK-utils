@@ -8,6 +8,8 @@ from math import *
 
 class RobotGeometryBase:
   def c2r(self, x,y,z):  # Cartesian to motor coordinate converter
+    raise ValueError("RobotGeometryBase c2r() method should be inherited")
+  def r2c(self, X,Y,Z):  # motor to Cartesian coordinate converter
     raise ValueError("RobotGeometryBase r2c() method should be inherited")
 
 class RobotGeometryAK(RobotGeometryBase):
