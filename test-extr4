@@ -1,0 +1,55 @@
+#! /bin/sh
+
+# assume home pos x=123.3, y=0
+
+#./ard G92 E0
+#./ard G1 X123.3 Y45 F1000 Z-8.2
+
+# 123.3 0  -8.2
+# 123.3 50 -8.2
+# 60 0 -8.5
+# 60 50 -8.6
+
+# heat to 240 C #and wait 15 sec
+#./ard M104 S240
+#./ard G4 P15000
+#sleep 9.3s
+
+date
+
+# Foolproof
+./ard M302
+./ard G92 E-20
+
+# Heat for 40 sec
+./ard M104 S240
+sleep 40s
+
+# extrude ~45mm(real)=63.3mm(logical) -> 4.5mm in -> 18 sec -> 211mm(log)/min motion
+# extr 2mm in 10 sec at 0.2mm/sec=12mm/min
+./ard G1 F400
+./ard G1 E-1.25 F400
+./ard G1 F12
+./ard G1 E0.75 F12
+sleep 8s
+
+# Drop to 220 C after 10 sec
+./ard M400
+./ard M104 S220
+
+# continue extr 6mm at 0.3mm/sec = 18mm/min for 20sec
+./ard G92 E0
+./ard G1 F12
+./ard G1 E4 F12
+
+# retract
+./ard G92 E0
+sleep 18s
+./ard G1 F600
+./ard G1 E-20 F600
+
+# Drop to 80 C
+./ard M400
+./ard M104 S80
+
+date
