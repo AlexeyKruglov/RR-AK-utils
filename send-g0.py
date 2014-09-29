@@ -25,10 +25,12 @@ rr=MarlinCmdG()
 #rr.c("M205 Z10") # Max Z jerk, mm/sec
 rr.c("M205 X3 Z10") # Max jerk, mm/sec
 #rr.debug = True
+rr.extrude = True
 #rr.extrude = False
 rr.set_feedrate(100)
 
 rr.c("G92 E0")
+e0=0
 rr.c("M302")
 
 rr.home()
@@ -38,9 +40,20 @@ rr.home()
 p = rr.get_pos()
 print p
 
+## white paper piece
+#x0=-50.
+#y0=74.
+#z0=-7.6
+
+# yellow sticky paper
 x0=-50.
-y0=74.
-z0=-7.4
+y0=107.
+z0=-8.1
+
+# large yellow sticky paper pad
+x0=-58.
+y0=113.5+2
+z0=-8.15
 
 print rr.geom.c2r(x0+2.85,y0,z0)
 
@@ -48,16 +61,38 @@ def dist(p0, p1):
   return math.sqrt((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2)
 
 def prime_to(p):
-  rr.go(x0+p[0]+5., y0+p[1], z0+p[2]+3, f=20, wait=True)
+  global e0
+  rr.go(x0+p[0]+5., y0+p[1], z0+p[2]+3., f=20, wait=True)
   if rr.extrude: rr.c("M104 S182")
-  time.sleep(10.-0.25)  # wait 10s
-  rr.go(x0+p[0]+5., y0+p[1], z0+p[2], f=20)
-  rr.go(x0+p[0], y0+p[1], z0+p[2], f=1./3)  # move 5mm for 15s
+  time.sleep(10.-2.)  # wait 10s
+  rr.go(x0+p[0]+10., y0+p[1], z0+p[2]+3., f=20)
+  rr.go(x0+p[0]+5., y0+p[1], z0+p[2], f=5)
+  t_e = min(15, 0.3 / e_feedrate)
+  x_e = 2.5
+  rr.go(x0+p[0]+x_e, y0+p[1], z0+p[2], f=1./3)  # move 5mm for 15s, no extrusion part
+  e0 += 0.3
+  rr.go(x0+p[0]    , y0+p[1], z0+p[2], e0, f=1./3)  # move 5mm for 15s, extrusion part
 
+
+pp_corr = None
+
+def correct_pull(cp, pp, dt):
+  global cp_cor, pp_corr
+
+  if pp_corr == None:
+    pp_corr = cp
+
+  v = ( (cp[0]-pp[0])/dt, (cp[1]-pp[1])/dt)
+  p1 = (cp[0] + tau1/dt*v[0], cp[1] + tau1/dt*v[1])
+  p2 = ( cp_corr[0] + (p1[0] - cp_corr[0])*dt/tau2 , cp_corr[1] + (p1[1] - cp_corr[1])*dt/tau2 )
+
+  pp_corr=cp_corrr
+  return p2
 
 pp=None
 
-for l in inf:
+try:
+ for l in inf:
   print l[:-1]
   lp=parseG(l[:-1])
   if lp['G']==1.:
@@ -65,7 +100,7 @@ for l in inf:
 
     if pp==None:
       prime_to(cp[0:3])
-      e0 = -cp[3]
+      e0 -= cp[3]
       pp=cp
       continue
 
@@ -76,18 +111,20 @@ for l in inf:
     cfeedrate = e_feedrate * cdist/edist  # in mm/sec in horizontal plane
     if cfeedrate > 149.: cfeedrate = 149.
 
+    #cp_corr = correct_pull(cp, pp, edist/e_feedrate)
+
     print "go %.3f %.3f %.3f %.3f @ %.2f" % (lp['X'], lp['Y'], lp['Z'], lp['E'], cfeedrate)
     rr.go(x = x0+cp[0], y = y0+cp[1], z = z0+cp[2], e = e0+cp[3], f = cfeedrate)
 
     pp=cp
+finally:
+ pp[3]-=0.3
+ rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2], e = pp[3], f = 1)
+ rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = pp[3], f = 50.)
+ rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = pp[3], f = 50.)
+ rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+30., e = pp[3], f = 50., wait=True)
 
-pp[3]-=0.3
-rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2], e = pp[3], f = 1)
-rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = pp[3], f = 50.)
-rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = pp[3], f = 50.)
-rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+30., e = pp[3], f = 50., wait=True)
+ if rr.extrude: rr.c("M104 S0")
 
-if rr.extrude: rr.c("M104 S0")
-
-rr.close()
-inf.close()
+ rr.close()
+ inf.close()
