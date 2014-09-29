@@ -39,3 +39,43 @@
 200	244	247	20
 
 
+# 2014.09.24 fixed hotend, R=5.9 Ohm now. Recalibrating.
+#temp-RR	temp-thermocouple	comment
+23.1	23	ambient temp
+30.0	28
+40.0	36
+60.0	52
+70	60
+30	28
+70	60	no temp. overshoot at all (thermocouple temp.)
+80	68
+90	77
+100	85
+115	97
+130	107	115 when pushing probe down
+130	111	after pushing, then stop pushing
+100	85
+130	110
+145	122
+160	133
+175	145
+190	157
+40	38
+190	163	no overshoot (thermocouple)
+40	36.5
+190	164	no overshoot (thermocouple); large lag b/w t-couple and RR thermistor (tens of sec's), probably cone heating lag
+190	178	pushing t-couple probe
+190	175	stop pushing
+100	92	oscillations +-0.4 C, max +-0.6 C (RR t'tor)
+190	175
+200	186
+210	NA	MAXTEMP triggered, extruder heater switched off
+
+23	23
+190	177	175 before pushing
+200	191
+210	201	202 when pushing
+220	211	210 overshoot, then 208, pushing -> 211
+230	221
+100	95	probe is stuck inside the cone
+180	-	got probe out
