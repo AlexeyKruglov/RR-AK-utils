@@ -4,6 +4,7 @@
 ./ard M104 S182
 #./ard G4 P15000
 sleep 24.3s
+sleep 5s
 
 # move closer
 #./ard M203 E1

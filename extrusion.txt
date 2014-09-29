@@ -1,0 +1,154 @@
+24.9.2014
+PLA:
+
+Pushing filment by hand.
+
+195 flows ok. Some backflow.
+
+188 hard to push it down. Moved to the side of the swollen filament cone.
+
+Conic plug formed, the pushing filament moved to its side and started 
+swelling under the load. Doesn't extrude nearly at all.
+
+Cut the `plug'.
+188 C -> flows ok, some backflow formed.
+192 C -> flows ok, more backflow.
+Pushing filament remains soft long after extrusion. Need retract farther or/and drop 
+heating or insulate it from the hot air from the hot heating cone..
+Seems it was softer inside, so maybe it was due to PLA thermal condustivity during
+the extrusion.
+
+190 C. No additional backflow! But hard to push.
+
+190 C. Second try. Cannot extrude at all, plug formed.
+Maybe the filament rotated and got stuck before reaching the hottest part, then started
+heating slowly (to the lower temps) and swelling, blocking longitudinal motion further.
+
+Probably filament & its swollen cone interior remained (became) warm after the last 
+extrusion, and swollen under the load at the start of this extr.
+
+The swollen cone end becomes dull due to PLA surface tension. PLA is rubber-like 
+when warm (above some temp? -- filament shaft demonstates sharp boundary between
+the rubber-like and solid regions when extrusion gets stuck and filament shaft 
+gets warm).
+
+25.9.2014
+190 C, PLA. No swollen cone, freshly cut filament. Extrusion flow ok, no backflow.
+From now on turn extruder heater off completely after extrusion end and retract filament
+closer to the cold end (for PLA only, not ABS). Retract 20 mm up = 3 mm between
+swollen cone top (nearly no backflow) and the cold end bottom.
+
+190 C. Second try. Harder to push, but possible. Shaft NOT soft (= hard) after 
+extrusion end. Cone hardened 101 sec after extrusion end. 
+
+=> Either start next extrusion right after the preceeding (say, < 5 sec), 
+or wait >= ~120 sec (extr. heater off) between segments. Underlying theory
+at 30.6.2014. Also need to limit extrusion speed from below. Maybe use 
+forced ventilation to cool the swollen cone after extrusion..
+
+Estimate extrusion rate. Extrudate width 0.75x0.85 mm (elliptic), 
+length 13.5 cm -> cross-section area 0.50 mm^2, volume 68 mm^3,
+time=30..40 sec -> rate = 1.93 mm^3/sec.
+Filament 2.9x2.9 .. 3.0x3.0 -> S=6.8 mm^2 -> v_in=0.28 mm/sec.
+
+Sec-last time: width 0.7x0.75 mm -> area=0.41 mm^2, length=~10 cm,
+time=26 sec. -> volume=41 mm^3, rate=1.58 mm^3/sec. ???: It seemed faster
+than the second time (1.93 mm^3/sec).
+
+190 C. 3rd try. Plugged. Swollen cone soft after 20 sec in the heating cone.
+No extrusion. Maybe filament rotated?
+Sw-cone hard <=100 sec after retraction (heating off only 61 sec after retraction).
+
+220 C, then 190 C. Trying to melt plug. Extruded a little (5.5 sec) at 220 C, 
+then no extrusion at 190 C.
+Maybe lowered to 190 C too early?
+
+220 C, then 190 C. Trying to melt the plug. 18 sec at 220 C, then 17 sec 
+at 190 C. Pushed through at 220 C after applying some force, then steady
+extrusion at 220 C and later at 190 C. But filament shaft shifted
+to sw-cone side (at center before). Needed higher heater temp for larger 
+temp gradient in the sw-cone?
+
+Measuring PLA softening temperature. Heating in the heating cone and checking.
+80 C	hard
+100	soft (could be softer)
+80	hard (after holding for 120 sec at 80 C)
+90	hard (after 100 sec)
+95	soft, rubber-like (after 100 sec)
+93	soft (80 sec)
+91	soft a little, incl. the lower end (70 sec)
+90	soft, incl lower end (70 sec)
+85	hard (80 sec)
+85	hard (1900 sec at 85 C)
+
+Air temp about 24.0 (RR thermistor).
+
+Shaft softening theory. T_shaft-T_a = (T_h-T_a)*exp(-t_D / t), 
+t=time, t_D = temp. diffusion time for sw-cone. 
+We have T_a ~= 30 C, T_sh=T_s = 90 C, T_h=220 C, t_sh.s. = 15..20 sec,
+let t_sh.s. = 16 sec  ->  t_D = ~18 sec.
+
+236 C (better 240, but MAXTEMP=240 now, overshoot ~ 1.5 C), start extr, wait 10 sec, 190 C.
+Extrusion ok, but hard. Extrusion starts with some delay (maybe 2..5 sec) after 
+applying force. Shaft moved a little closer to sw-cone center, no backflow.
+
+26.9.2014
+240 C, start pushing, wait 10 sec, 190 C. Measuring the delay between pushing and extrision.
+Extr started 7 sec after applying force. Some backflow. The required force 
+increased after cooling to 190 C.
+0.6x0.7 mm at 190 C
+0.55x0.65 mm at 240 C
+
+If we assume that sw-cone can be pushed through when some part of it heats
+to 150 C (T_a+120 C = T_h-90 C) and it takes 7 sec at 240 C (T_a+210 C), then 
+diffusion time t_d for that part is t_d=4 sec.
+For 90 C instead of 150 C we get t_d=9 sec.
+
+Maybe cool (to <~150 C) the sw-cone inside the heating cone to avoid forming 
+a `beard' below the sw-cone after retraction?
+
+Tried autonomous extrusion initiation: heat to 240 C, wait, move to -0.5, 
+extrude at 0.15mm/sec until +1.0 for 10 sec, drop to 190 C, extrude at 0.25 mm/sec.
+Initiation seems ok. Maybe move faster like 0.2 mm/sec and extrude at 0.3 mm/sec?
+
+Finish: retract -0.25 at 10 mm/sec, drop to 100 C, wait 25 sec, retract 
+to -2 at 0.5 mm/sec, to -20 at 10 mm/sec. Finishing not ok: long 'beard'
+of molten plastic under the sw-cone. Better retract fast farther?
+
+27.9.2014
+Init: 240 C, wait 40 sec, move to -0.5 at 6.66mm/sec, extr 2 mm at 0.2mm/sec
+for 10 sec, drop to 190 C, continue extr at 0.3 mm/sec.
+Finish: retract -20 mm at 10 mm/sec.
+-> Extr more-or-less ok at 240 C, nearly no flow at 190 C: filament slips
+in cold-end.
+
+Second try (fixing some feedrate bugs). Same result: cold-end too weak,
+filament slips. But when trying to push it with hand with extr motor on
+it holds filament well. Maybe the toothed wheel strips filament during 
+initiation or it just IS stripped at that position, i.e. was stripped 
+during the previous extrusion tests.
+
+Try to continue extr at 220 C instead of 190 C and see.
+-> cold-end cannot push the filament, it slips. After helping with hand,
+it managed to push it itself for the last ~3 sec of extrusion (out of 
+20 sec at 220 C)
+
+Drop extr speed 0.3 to 0.2 mm/sec at 220 C.
+After some initial help by hand it managed to extrude on its own.
+Seems like it strips at initial move. Move to -1.25 mm initially
+instead of -0.5 mm.
+
+Trying it -> extruded 0.55x0.6x80 mm = 20.7 mm^3 -> ~3 mm of filament
+instead of 4.75 mm -> eta~=0.63. 
+
+Second try. Extr 2.7mm of filament (direct measurement). 0.6x0.65x50mm = 
+= 15.3 mm^3 -> 2.2mm of filament -> 3 mm^3 into backflow???.
+
+3rd try. Extr 18.3-14.5=3.8mm of filament, 0.6x0.65x101mm=30.9 mm^3 
+extrudate, corr. to 4.5mm filament. 5 mm^3 from 'backflow' (i.e. from
+decrease in sw-cone volume)? Backflow doesn't seem to build up (i.e. 
+grow).
+
+Almost no bubbles at 190 C, some bubbles in extrudate at 220 C and 240 C.
+
+29.9.2014
