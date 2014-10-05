@@ -23,14 +23,14 @@ date
 
 # Heat for 40 sec
 ./ard M104 S240
-sleep 40s
+sleep 38s
 
 # extrude ~45mm(real)=63.3mm(logical) -> 4.5mm in -> 18 sec -> 211mm(log)/min motion
 # extr 2mm in 10 sec at 0.2mm/sec=12mm/min
 ./ard G1 F400
-./ard G1 E-1.25 F400
+./ard G1 E-1 F400
 ./ard G1 F12
-./ard G1 E0.75 F12
+./ard G1 E1 F12
 sleep 8s
 
 # Drop to 220 C after 10 sec

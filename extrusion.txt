@@ -152,3 +152,21 @@ grow).
 Almost no bubbles at 190 C, some bubbles in extrudate at 220 C and 240 C.
 
 29.9.2014
+Slipping in the cold-end -> tighten it.
+Measure extr start delay -> 4 sec. No slipping now, it seems 
+(extr measured=5.1mm=16.3-11.2, calculated=5.25mm).
+-1.25 mm at 0.2mm/sec -> 6.5 sec calculated delay. -> start 
+moving from -1.0 instead of -1.25 mm. This will give 5 sec 
+calculated delay, may decrease popping.
+
+Prime to E=-1mm. Extr meas=4.8=11.2-6.4, calc=5.0mm.
+Extradate 0.65x0.65x113 mm=37.5 mm^3 -> 5.~5mm filament.
+Almost no popping.
+
+-> eta=(5.1+4.8 +- 1.41*0.25)/(5.25+5.0)=0.966+-0.035
+
+05.10.2014
+Finally managed to print a PLA hexagon. 
+Theoretical: w=0.8 mm, outer width=9.8, inner width=8.2,
+layer height=0.5. Physical: w=0.55 (every wall), outer width=9.4.
+
