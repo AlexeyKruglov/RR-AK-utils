@@ -170,3 +170,35 @@ Finally managed to print a PLA hexagon.
 Theoretical: w=0.8 mm, outer width=9.8, inner width=8.2,
 layer height=0.5. Physical: w=0.55 (every wall), outer width=9.4.
 
+2 try. Layer=0.25 mm (to test wall thickness for different layer heights);
+measuring filament length (mark at 20.5mm). 
+20.4-9.1=11.3mm. Extrusion flow started a bit late; missed some material in 
+top 1 mm. Layer h was 0.5mm really.
+
+3 try. Layer=0.25 mm. Extr. started very late, almost no flow.
+9.1-9.1=0.0mm filament extruded. Motor turned ~~3mm.
+
+4) test-extr4. Logical 5mm.
+9.1-4.0=5.1mm filament -> 34.9mm^3..
+-> extrudate 0.63x0.65x114mm = 46.7mm^3 -> 6.83 mm filament
+-> 11.8mm^3=1.7mm(fil) from sw-cone.
+
+5) test-extr4. Logical 5 mm. 24.0-18.5=5.5mm.
+
+5) test-extr4. 18.5-13.2=5.3mm.
+
+6) hexagon
+Change filament feed rate 0.25 mm/sec -> 0.2 mm/sec, extrusion temp 240->220 C
+(initiation temp. remained 240 C).
+logical: 13.36+1.6=14.96mm
+measured filament: 33.2-17.5=15.7mm
+extrudate: wall width 0.55..0.65mm, hexagon outer width 9.6..9.7.
+
+ ! Bug in geng-cyl-*: forgotted pi/4 in in_area initialization.
+
+7) hexagon
+logical: 12.05+1.6=13.65mm
+filament: 17.5--6.5=11.0mm
+
+8) 6.5-5.1=1.4mm. Failed print. Extr motor stopped at 90 deg.
+Failing zone at 40..90 deg. Plus at ~315 deg.

@@ -10,8 +10,8 @@ from marlin_ak import *
 import time
 import math
 
-e_feedrate=0.25  # mm/sec, incoming filament
-e_add = 0.0
+e_feedrate=0.2  # mm/sec, incoming filament
+e_add = 0.6
 
 def parseG(l):
   ls=l.split(" ")
@@ -86,8 +86,9 @@ def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a new cut filam
   rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, f=5)
   e0 += e_retract-1
   rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, e0, f=10)  # extruder move to -1mm (assuming -20mm initial position)
-  e0 += 2+e_add1
+  e0 += 2*0.96+e_add1
   rr.go(x0+p[0]+0.4, y0+p[1], z0+p[2]+0.4, e0, f=1)  # move 5mm for 10s, extrude 2mm (1mm avg)
+  e0 += 2*0.04
   rr.go(x0+p[0]    , y0+p[1], z0+p[2]    , e0, f=1.4142, wait=True)
   if rr.extrude: rr.c("M104 S220")
 

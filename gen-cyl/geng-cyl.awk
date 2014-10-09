@@ -25,7 +25,8 @@ BEGIN {
 
   w=0.75; h=0.2; h0=0.45; w0=0.75
 #  kpd=0.77*0.86; in_diam=2.9; ce=0  # ABS
-  kpd=0.965; in_diam=2.95; ce=0  # PLA
+#  kpd=0.965; in_diam=2.95; ce=0  # PLA
+  kpd=1.06; in_diam=2.95; ce=0  # PLA
   in_area=in_diam^2  # times pi/4
 
   CONVFMT="%.6f"
