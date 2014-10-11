@@ -2,31 +2,13 @@
 
 # Generage G-code(iter0) of a 1 layer helix cylinder
 
-function dist(x0,y0, x1,y1) {
-  return sqrt((x1-x0)^2 + (y1-y0)^2)
-}
+@include "geng-cyl.awkinc"
 
 function abs(x) { return x>0?x:-x }
 function bound(x,a,b) { return x<a?a:x>b?b:x }  # assume a<=b
 
 function interp(x, x0,x1, y0,y1) {
   return y0+(y1-y0)*(x-x0)/(x1-x0+1e-20)
-}
-
-function float(x) { return x+1e-10 }
-
-function go(x,y,z,ch,cw) {
-  if(cx!="") {
-    cd=dist(cx,cy, x,y)
-    ce += cd*cw*ch / in_area / kpd
-  }
-
-  x+=1e-10; y+=1e-10; z+=1e-10  # convert int -> float
-
-  print "G1", "X"float(x), "Y"float(y), "Z"float(z), "E"float(ce)
-  #v = ch/h/w*in_area
-
-  cx=x; cy=y
 }
 
 function p2sincos(phi,r1,r2) {
@@ -94,14 +76,10 @@ function getr1r2(z) {
 }
 
 END {
-  pi=3.14159265359
-
   w=0.75; minw=0.55; h=0.2; h0=0.55; w0=0.75
   kpd=0.77*0.86 *0.75; in_diam=2.9; ce=0
   in_area=in_diam^2 * pi/4
   delta = 0.9
-
-  CONVFMT="%.6f"
 
   Di=5.0; Do=23.6
   step=0.25

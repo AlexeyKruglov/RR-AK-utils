@@ -2,34 +2,12 @@
 
 # Generage G-code(iter0) of a 1 layer helix cylinder
 
-function dist(x0,y0, x1,y1) {
-  return sqrt((x1-x0)^2 + (y1-y0)^2)
-}
-
-function float(x) { return x+1e-10 }
-
-function go(x,y,z,ch,cw) {
-  if(cx!="") {
-    cd=dist(cx,cy, x,y)
-    ce += cd*cw*ch / in_area / kpd
-  }
-
-  x+=1e-10; y+=1e-10; z+=1e-10  # convert int -> float
-
-  print "G1", "X"float(x), "Y"float(y), "Z"float(z), "E"float(ce)
-  #v = ch/h/w*in_area
-
-  cx=x; cy=y
-}
+@include "geng-cyl.awkinc"
 
 BEGIN {
-  pi=3.14159265359
-
   w=0.7; h=0.2; h0=0.45
   kpd=0.77*0.86; in_diam=2.9; ce=0
   in_area=in_diam^2 * pi/4
-
-  CONVFMT="%.4f"
 
   Di=4.9; Do=8.1+0.35; nw=8
   step=0.25
