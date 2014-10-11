@@ -98,7 +98,7 @@ END {
 
   w=0.75; minw=0.55; h=0.2; h0=0.55; w0=0.75
   kpd=0.77*0.86 *0.75; in_diam=2.9; ce=0
-  in_area=in_diam^2  # times pi/4
+  in_area=in_diam^2 * pi/4
   delta = 0.9
 
   CONVFMT="%.6f"
