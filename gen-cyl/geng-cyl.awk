@@ -11,13 +11,13 @@ function float(x) { return x+1e-10 }
 function go(x,y,z,ch,cw) {
   if(cx!="") {
     cd=dist(cx,cy, x,y)
-    ce += cd*cw*ch / in_area / kpd
+    ce += cd*(ccw*cch + 4*(ccw+cw)*(cch+ch)/4 + cw*ch)/6 / in_area / kpd  # Simpson integration step, exact for linear w(d), h(d)
   }
 
   print "G1", "X"float(x), "Y"float(y), "Z"float(z), "E"float(ce)
   #v = ch/h/w*in_area
 
-  cx=x; cy=y
+  cx=x; cy=y; cch=ch; ccw=cw
 }
 
 BEGIN {
