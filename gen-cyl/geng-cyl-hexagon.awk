@@ -17,7 +17,7 @@ BEGIN {
 
   ra=(Wo-w)/2 / cos(pi/n)
 
-  for(i=0; i<n; i++) pz[i]=-h0
+  for(i=0; i<n; i++) { pzl[i]=pzr[i]=-h0 }  # i-th segment start and stop z
 
   zn=int(Z/h+1); h=Z/zn
   for(i=-n; i<=n*(zn+1); i++) {
@@ -25,6 +25,10 @@ BEGIN {
     cz=i/n*h
     cw = cz<=0 ? w0 : w
     if(cz<0) cz=0; else if(cz>Z) cz=Z
-    ipn = (i+n)%n; go(ra*cos(phi), ra*sin(phi), cz, cz-pz[ipn], cw); if (i>-n) pz[ipn]=cz
+    ipn = (i+n)%n
+    cch = pcz-pzl[ipn]  # on the first call go() does not use cch in calculations
+    go(ra*cos(phi), ra*sin(phi), cz, cz-pzr[ipn], cw)
+    if(i>-n) { pzl[ipn]=pcz; pzr[ipn]=cz }  # since there's no segment produced on the first call
+    pcz=cz
   }
 }

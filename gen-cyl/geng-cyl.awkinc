@@ -13,6 +13,7 @@ function go(x,y,z,ch,cw) {
   }
 
   print "G1", "X"float(x), "Y"float(y), "Z"float(z), "E"float(ce)
+  #print "w:"ccw".."cw"  h:"cch".."ch
   #v = ch/h/w*in_area
 
   cx=x; cy=y; cch=ch; ccw=cw
