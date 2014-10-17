@@ -1,0 +1,36 @@
+{
+  order[-1]="G"
+  order[0]="M"
+  order_n=0
+}
+
+function parse_GC() {
+  split("", f)  # delete f[]
+  for(parse_GC_i=1; parse_GC_i<=NF; parse_GC_i++) {
+    f[substr($parse_GC_i,1,1)] = substr($parse_GC_i, 2)
+    order[parse_GC_i]=substr($parse_GC_i,1,1)
+  }
+  order_n=NF
+
+  if ("X" in f) cx=f["X"]+0; if(cx=="") cx=px
+  if ("Y" in f) cy=f["Y"]+0; if(cy=="") cy=py
+  if ("Z" in f) cz=f["Z"]+0; if(cz=="") cz=pz
+  if ("E" in f) ce=f["E"]+0; if(ce=="") ce=pe
+}
+
+function format_GC() {
+  format_GC_s=""
+  for(i=-1; i<=order_n; i++) if(f[order[i]]!="") {
+    format_GC_s = format_GC_s " " order[i] f[order[i]]
+    f[order[i]]=""
+  }
+  for(i in f) if(f[i]!="") {
+    format_GC_s = format_GC_s " " i f[i]
+    f[i]=""
+  }
+  return substr(format_GC_s,2)
+}
+
+function update_p() {
+  px=cx; py=cy; pz=cz; pe=ce
+}
