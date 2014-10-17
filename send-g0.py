@@ -129,11 +129,17 @@ try:
     cdist = dist(pp[0:2], cp[0:2])
     edist = cp[3] - pp[3]
 
-    if edist < 1e-6: edist = 1e-6
-    cfeedrate = e_feedrate * cdist/edist  # in mm/sec in horizontal plane
-    if cfeedrate > 149.: cfeedrate = 149.
+    if False:  # feedrate calculation moved to const-flow.awk
+      if edist < 1e-6: edist = 1e-6
+      cfeedrate = e_feedrate * cdist/edist  # in mm/sec in horizontal plane
+      if cfeedrate > 149.: cfeedrate = 149.
 
     #cp_corr = correct_pull(cp, pp, edist/e_feedrate)
+
+    if 'F' in lp:
+      cfeedrate = lp['F']
+    else:
+      cfeedrate = None
 
     print "go %.3f %.3f %.3f %.3f @ %.2f" % (lp['X'], lp['Y'], lp['Z'], lp['E'], cfeedrate)
     rr.go(x = x0+cp[0], y = y0+cp[1], z = z0+cp[2], e = e0+cp[3], f = cfeedrate)
