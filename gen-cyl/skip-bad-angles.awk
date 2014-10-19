@@ -13,25 +13,29 @@ BEGIN {
   calpha = alpha0
   e_steps_per_mm = 203.72*1.02
   period = 3200 / e_steps_per_mm
+  e_move_start = 21.6  # mm, protraction at the beginning
+  e_move_end = 20.0    # mm, the amount of retraction to the parking positions at the end
+  
+  calpha += e_move_start/period
 
   intn = 0
   # intervals must not intersect nor touch
   bad_interval(0, 90)
-  bad_interval(305, 315)
-  leave_angle = 0.1       # revolutions
-  dump_align_angle = 90.  # dumped extrusion will be right aligned on this angle position
-  dump_w = 1.0            # mm, dump tracks step
-  dump_reg_rot = 0*90 /180*pi  # radians, CCW, x axis -> direction across dump tracks rotation angle
-  dump_reg_x0 = -50  # set!!!
-  dump_reg_y0 = 80   # set!!!
+  bad_interval(300, 330)
+  leave_angle = 0.1            # revolutions
+  dump_align_angle = 90./360.  # dumped extrusion will be right aligned on this angle position
+  dump_w = 1.0                 # mm, dump tracks step
+  dump_reg_rot = 90 /180*pi    # radians, CCW, x axis -> direction across dump tracks rotation angle
+  dump_reg_x0 = 15   # mm
+  dump_reg_y0 = -16   # mm
 
   max_xy_rate = 150       # mm/sec
-  dump_z = 0.6
+  dump_z = 0
   dump_move_z = 2.0
   e_retract = 0.5
   retract_e_rate = 10.0
   dump_k = 100            # mm/revolution = mm/period(e)
-  dump_e_rate = 0.5       # mm/sec
+  dump_e_rate = 0.4       # mm/sec
   dump_f_rate = dump_e_rate / period * dump_k
   dump_y_reflect = 1
 
@@ -42,7 +46,7 @@ BEGIN {
   state=0
   # state=0  not retracted
   # state=1  retracted, need to unretract
-  cf = dump_f_rate
+  cf = dump_f_rate*60
 
   eps = 1e-6
   CONVFMT=OFMT="%.6f"
@@ -90,7 +94,7 @@ function meta(t,s) {
 
 # nstate=1 -> retract
 # nstate=0 -> unretract
-function retract(nstate, cf) {
+function retract(nstate, cf) {  # cf in mm/min
   if(state==nstate) return
   meta("retract", "new_state="nstate)
   print "G1 F"retract_e_rate*60
@@ -110,9 +114,13 @@ function move_noextr(ox,oy, nx,ny,nz) {  # always move at pz+dump_move_z
 }
 
 function conv_dump_coord(x, y) {
+  # print "!!!", x,y
   y *= dump_y_reflect
+  #x -= dump_reg_x0
+  #y -= dump_reg_y0
   ret_x = x*cos(dump_reg_rot) - y*sin(dump_reg_rot) + dump_reg_x0
   ret_y = y*cos(dump_reg_rot) + x*sin(dump_reg_rot) + dump_reg_y0
+  # print "!!!", ret_x,ret_y, x,y
 }
 
 function dump_angle(dangle) {  # skip dangle revolutions
@@ -125,7 +133,7 @@ function dump_angle(dangle) {  # skip dangle revolutions
 
   move_noextr(px,py, xpos0,ypos0,dump_z)
 
-  retract(0, dump_f_rate)
+  retract(0, dump_f_rate*60)
   calpha += dangle
   e0 += dangle*period
   # extrude (dump)
@@ -191,5 +199,5 @@ END {
     dump_angle(r_left_angle)
     left_angle = angle_left(calpha, "l")
   }
-  print "alpha0="calpha >"alpha0.dat"
+  print "alpha0="calpha-e_move_end >"alpha0.dat"
 }
