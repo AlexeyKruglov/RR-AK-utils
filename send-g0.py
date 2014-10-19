@@ -20,14 +20,14 @@ def parseG(l):
     res[i[0:1]]=float(i[1:])
   return res
 
-inf=open("gen-cyl/cyl.g0", "r")
+inf=open("gen-cyl/cyl.g", "r")
 
 rr=MarlinCmdG()
 #rr.c("M205 Z10") # Max Z jerk, mm/sec
 rr.c("M205 X3 Z10") # Max jerk, mm/sec
 #rr.debug = True
 rr.extrude = True
-#rr.extrude = False
+#rr.extrude = False  # !!! debug
 rr.set_feedrate(100)
 
 rr.c("G92 E0")
@@ -55,7 +55,7 @@ z0=-8.1
 # large yellow sticky paper pad
 x0=-58.
 y0=113.5+3.5
-z0=-6.25
+z0=-6.6
 
 print rr.geom.c2r(x0+2.85,y0,z0)
 
@@ -81,7 +81,7 @@ def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a new cut filam
   e_retract=20.
   rr.go(x0+p[0]+5.+e_add1*5, y0+p[1], z0+p[2]+3., f=20, wait=True)
   if rr.extrude: rr.c("M104 S240")
-  time.sleep(40.-2.)  # wait 40s
+  if rr.extrude: time.sleep(40.-2.)  # wait 40s
   rr.go(x0+p[0]+15.+e_add1*5, y0+p[1], z0+p[2]+3., f=20)
   rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, f=5)
   e0 += e_retract-1
@@ -112,13 +112,19 @@ def correct_pull(cp, pp, dt):
   return p2
 
 pp=None
+order=dict()
+order['X']=0
+order['Y']=1
+order['Z']=2
+order['E']=3
 
 try:
  for l in inf:
   print l[:-1]
   lp=parseG(l[:-1])
-  if lp['G']==1.:
-    cp = map(lambda x: lp[x], ['X','Y','Z','E'])
+  if 'G' in lp and lp['G']==1.:
+    print lp
+    cp = map(lambda x: lp[x] if (x in lp) else pp[order[x]], ['X','Y','Z','E'])
 
     if pp==None:
       prime_to(cp[0:3])
@@ -137,23 +143,24 @@ try:
     #cp_corr = correct_pull(cp, pp, edist/e_feedrate)
 
     if 'F' in lp:
-      cfeedrate = lp['F']
+      cfeedrate = lp['F']/60
     else:
       cfeedrate = None
 
-    print "go %.3f %.3f %.3f %.3f @ %.2f" % (lp['X'], lp['Y'], lp['Z'], lp['E'], cfeedrate)
+    print "go %.3f %.3f %.3f %.3f @ %.2f" % (cp[0], cp[1], cp[2], cp[3], cfeedrate)
     rr.go(x = x0+cp[0], y = y0+cp[1], z = z0+cp[2], e = e0+cp[3], f = cfeedrate)
 
     pp=cp
 finally:
- rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
- e0 -= e_retract
- rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 5.)
- e_retract=0
- rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = e0+pp[3], f = 50.)
- rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+30., e = e0+pp[3], f = 50., wait=True)
+  if pp!=None:
+    rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
+    e0 -= e_retract
+    rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 5.)
+    e_retract=0
+    rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = e0+pp[3], f = 50.)
+    rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+30., e = e0+pp[3], f = 50., wait=True)
 
- if rr.extrude: rr.c("M104 S0")
+    if rr.extrude: rr.c("M104 S0")
 
- rr.close()
- inf.close()
+    rr.close()
+    inf.close()
