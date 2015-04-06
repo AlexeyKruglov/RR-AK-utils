@@ -48,16 +48,20 @@ try:
     elif cmd[0:1]=="z":  # go Z=arg
       z=float(cmd[1:])
       rr.goraw(z=z)
+      rr.pick_pos()
     elif cmd[0:1]=="x":  # go X=arg
       x=float(cmd[1:])
       rr.goraw(x=x)
+      rr.pick_pos()
     elif cmd[0:1]=="y":  # go Y=arg
       y=float(cmd[1:])
       rr.goraw(y=y)
+      rr.pick_pos()
     elif cmd[0:1]=="h":  # home
       rr.home()
     elif cmd[0:1]=="H":  # home z
       rr.home_z()
+      rr.pick_pos()
     else:  # go z = z+arg
       dz=float(cmd)
       z=p[2]+dz

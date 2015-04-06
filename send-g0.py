@@ -11,7 +11,7 @@ import time
 import math
 
 e_feedrate=0.2  # mm/sec, incoming filament
-e_add = 0.6
+e_add = 0.
 
 def parseG(l):
   ls=l.split(" ")
@@ -54,8 +54,8 @@ z0=-8.1
 
 # large yellow sticky paper pad
 x0=-58.
-y0=113.5+3.5
-z0=-6.6
+y0=113.5+0.23
+z0=-7.0
 
 print rr.geom.c2r(x0+2.85,y0,z0)
 
@@ -78,7 +78,7 @@ def prime_to_ABS(p):
 
 def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a new cut filament
   global e0, e_retract
-  e_retract=20.
+  e_retract=15.
   rr.go(x0+p[0]+5.+e_add1*5, y0+p[1], z0+p[2]+3., f=20, wait=True)
   if rr.extrude: rr.c("M104 S240")
   if rr.extrude: time.sleep(40.-2.)  # wait 40s
@@ -90,7 +90,7 @@ def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a new cut filam
   rr.go(x0+p[0]+0.4, y0+p[1], z0+p[2]+0.4, e0, f=1)  # move 5mm for 10s, extrude 2mm (1mm avg)
   e0 += 2*0.04
   rr.go(x0+p[0]    , y0+p[1], z0+p[2]    , e0, f=1.4142, wait=True)
-  if rr.extrude: rr.c("M104 S220")
+  if rr.extrude: rr.c("M104 S195")
 
 def prime_to(p):
   prime_to_PLA(p)
@@ -120,8 +120,9 @@ order['E']=3
 
 try:
  for l in inf:
-  print l[:-1]
-  lp=parseG(l[:-1])
+  l = l[:-1]
+  print l
+  lp=parseG(l)
   if 'G' in lp and lp['G']==1.:
     print lp
     cp = map(lambda x: lp[x] if (x in lp) else pp[order[x]], ['X','Y','Z','E'])
@@ -151,6 +152,9 @@ try:
     rr.go(x = x0+cp[0], y = y0+cp[1], z = z0+cp[2], e = e0+cp[3], f = cfeedrate)
 
     pp=cp
+  elif 'G' in lp and lp['G']==4.:
+    rr.c(l)
+
 finally:
   if pp!=None:
     rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)

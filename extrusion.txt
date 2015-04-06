@@ -202,3 +202,69 @@ filament: 17.5--6.5=11.0mm
 
 8) 6.5-5.1=1.4mm. Failed print. Extr motor stopped at 90 deg.
 Failing zone at 40..90 deg. Plus at ~315 deg.
+
+
+18.10.2014
+Implemented dumping the slipping motor angles.
+0: ?
+1: 5..9 bad, 11 bad
+4: 7..10 bad, 11.. ok
+5: 8,9,10 bad, 11.. ok
+
+->
+1: e=8.58..11.27 bad, 11.81..11.91 ok, 12.45..12.56 bad, 13.10.. ok
+4: e=9.55..11.59 bad, 12.13.. ok
+5: e=
+
+19.10.2014
+-> bad region: e=8.4..12.7
+starting alpha=0.925, priming offset=21.6mm,
+period=15.3998mm ->
+bad region=2.873..3.152 revolutions = 314.3..54.8 deg
+
+Dump track width is ingomogeneous in its starting 2.0 mm.
+Dump xy feedrate=2.59 mm/sec -> 0.77 sec flowrate settling time
+-> let's wait (G4) for 0.6sec after the unretract and before extrusion.
+
+ * Printing hexagon
+wall 0.6mm, logical=0.8mm
+
+ * Next try at hexagon
+Decreasing kpd 0.6/0.8 times. 
+-> wall=0.8, but considerable non-orthogonality (need 
+geometric recalibration).
+
+Wall-to-wall widths: 9.6, 9.8, 9.9.mm (logical = 9.9)
+Much backflow (T_init=240, T_extr=220)
+
+Extrusion: filament=22.5mm=44.0-21.5, logical=20.36+1.6=21.96mm.
+No missing layers.
+
+ * Net try
+Lower T_extr: 220 -> 212
+-> significant backflow again.
+
+Change slipping (=bad) angles: 
+move end 11.5/100=0.115 rev=41.4 deg back
+move start 0.9/15.4=0.059 rev=21.0 deg back
+-> new bad_interval=293.3..13.4 deg
+
+ * Fixed bad_interval. No missing layers, but have missing extrusion
+in the dumped track.
+Bud at the return from the dumping is a littletoo big. -> need to decrease
+dwell time 0.6 sec -> 0.5 sec.
+
+Widths 9.6, 9.85, 9.8 mm. Walls 0.8..0.85 mm.
+
+The base layer didn't stick well. Need to increase base layer 
+width ~1.5 times. Now logical: 1.0x0.3 mm, phys wid=0.85mm.
+-> new: 1.3x0.35mm.
+
+Need to dwell a little (say 0.3sec) before leaving extruded segment
+to make the last point stick.
+
+Some backflow -> need T_extr=207.
+
+ * Now with all those changes ^^^.
+Plugged. Virtually no extr from the start.
+T_extr -> 220.

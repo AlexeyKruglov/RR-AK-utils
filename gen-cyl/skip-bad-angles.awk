@@ -10,20 +10,25 @@ BEGIN {
 
   pi = 3.14159265359
 #  alpha0 /= 360.
-  calpha = alpha0
   e_steps_per_mm = 203.72*1.02
   period = 3200 / e_steps_per_mm
-  e_move_start = 21.6  # mm, protraction at the beginning
-  e_move_end = 20.0    # mm, the amount of retraction to the parking positions at the end
-  
-  calpha += e_move_start/period
+  e_move_end = 15.0    # mm, the amount of retraction to the parking positions at the end
+  e_move_start = e_move_end+1.+0.0  # mm, protraction at the beginning
+
+  alpha0 += e_move_start/period
+  calpha = alpha0%1
 
   intn = 0
   # intervals must not intersect nor touch
-  bad_interval(0, 90)
-  bad_interval(300, 330)
-  leave_angle = 0.1            # revolutions
-  dump_align_angle = 90./360.  # dumped extrusion will be right aligned on this angle position
+  ## v0
+  # bad_interval(0, 90)
+  # bad_interval(300, 330)
+  ## v1
+  # bad_interval(293.3, 13.4)
+  ## v2
+  bad_interval(90*2.4, 90*3.2)
+  leave_angle = (2.0+2.0)/period   # revolutions
+  dump_align_angle = 90*3.3/360.  # dumped extrusion will be right aligned on this angle position
   dump_w = 1.0                 # mm, dump tracks step
   dump_reg_rot = 90 /180*pi    # radians, CCW, x axis -> direction across dump tracks rotation angle
   dump_reg_x0 = 15   # mm
@@ -37,7 +42,7 @@ BEGIN {
   dump_k = 100            # mm/revolution = mm/period(e)
   dump_e_rate = 0.4       # mm/sec
   dump_f_rate = dump_e_rate / period * dump_k
-  dump_y_reflect = 1
+  dump_x_reflect = -1
 
   # min_xy_dist = 2.5  # mm, not implemented
   meta_out=0
@@ -67,6 +72,8 @@ function ceil(x) { return -floor(-x) }
 #   find="r": to the next bad interval end
 # Infinity -> 10
 function angle_left(calpha, find) {
+  if(find == "l")
+    angle_left_r = angle_left(calpha, "r")
   calpha = frac(calpha)
   angle_left_minleft = 10
   for(i=0; i<intn; i++) {
@@ -75,6 +82,8 @@ function angle_left(calpha, find) {
     if(angle_left_minleft > angle_left_cleft) angle_left_minleft = angle_left_cleft
   }
   if(find=="l") meta("info", "find="find" calpha="calpha" left_angle="angle_left_minleft)
+  if(find == "l" && angle_left_r > 1e-4 && angle_left_minleft >= angle_left_r)
+    return 0
   return angle_left_minleft
 }
 
@@ -99,7 +108,12 @@ function retract(nstate, cf) {  # cf in mm/min
   meta("retract", "new_state="nstate)
   print "G1 F"retract_e_rate*60
   print "G1 E"pe+e0-nstate*e_retract" F"retract_e_rate*60
-  if(nstate==0) print "G1 F"cf
+  if(nstate==0) {
+    print "G1 F"cf
+    print "G4 P500"
+  } else {
+    print "G4 P300"
+  }
   state = nstate
 }
 
@@ -115,7 +129,7 @@ function move_noextr(ox,oy, nx,ny,nz) {  # always move at pz+dump_move_z
 
 function conv_dump_coord(x, y) {
   # print "!!!", x,y
-  y *= dump_y_reflect
+  x *= dump_x_reflect
   #x -= dump_reg_x0
   #y -= dump_reg_y0
   ret_x = x*cos(dump_reg_rot) - y*sin(dump_reg_rot) + dump_reg_x0
@@ -173,15 +187,18 @@ function extr_portion(nde) {
   if(edist<=0) {  # no extr, just move
     print format_GC()
     calpha += edist / period
-  } while(edist>0) {  # extr
+  } while(edist+0>0) {  # extr
     left_angle = angle_left(calpha, "l")
     left = period * left_angle
+    # print "# left_l="left
     cedist = edist
     if(cedist > left) cedist=left
     extr_portion(cedist)
     if(left <= 0) {
+      # print "# left_l2="left
       left_angle = angle_left(calpha, "r")
       left = period * left_angle
+      # print "# left_r="left
       dump_angle(left_angle)
     }
   }
@@ -199,5 +216,6 @@ END {
     dump_angle(r_left_angle)
     left_angle = angle_left(calpha, "l")
   }
-  print "alpha0="calpha-e_move_end >"alpha0.dat"
+  # vvv !!! int part may diverge across runs if int(e_move_end/period)!=int(e_move_start/period)
+  print "alpha0="calpha-(e_move_end/period)%1 >"alpha1.dat"
 }

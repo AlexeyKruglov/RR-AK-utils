@@ -5,10 +5,10 @@
 @include "geng-cyl.awkinc"
 
 BEGIN {
-  w=0.8; h=0.2; h0=0.5; w0=0.8
+  w=0.8; h=0.2; h0=0.35; w0=1.3
 #  kpd=0.77*0.86; in_diam=2.9; ce=0  # ABS
 #  kpd=0.965; in_diam=2.95; ce=0  # PLA
-  kpd=1.06; in_diam=2.95; ce=0  # PLA
+  kpd=1.06 * (0.6/0.8) * (0.65/0.8); in_diam=2.95; ce=0  # PLA
   in_area=in_diam^2 * pi/4
 
   n=6
