@@ -19,6 +19,9 @@ phi2k=115.573
 Xperp_2=Xperp
 R2_2=R2
 
+Xperp_0=Xperp
+R2_0=R2
+
 Y0=150.
 xx0=-200.
 yy0=-10.
@@ -26,8 +29,12 @@ yy0=-10.
 #xx0=0.
 #yy0=0.
 
-R2i(i)=(i==1)?R2:R2_2
-Xperpi(i)=(i==1)?Xperp:Xperp_2
+# Every type is valid
+# Return 0 for valid types and 1/0 for invalid types. Use only(condition)
+valid_types(t)=0
+
+R2i(i)=(i==1)?R2:(i==2)?R2_2:R2_0
+Xperpi(i)=(i==1)?Xperp:(i==2)?Xperp_2:Xperp_0
 
 # phi1=y/phi1k
 # phi2=(x-Xperp)/phi2k

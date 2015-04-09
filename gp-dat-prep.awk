@@ -6,7 +6,7 @@ BEGIN {
   eol=ORS
 }
 
-!/^#/ {
+!/^#/ && !/^[[:space:]]*$/ {
   if(coln<NF) coln=NF
   for(i=1; i<=NF; i++)
     data[rown,i]=$i
