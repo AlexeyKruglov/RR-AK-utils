@@ -24,18 +24,16 @@ noabs=1
 valid_types(t)=only((t<3 || !noabs) && t>=1)
 valid0(x0)=$0+valid_types(col6($0))
 #fit func(x) "geom-cal.dat" u (valid0($0)):5 via Xperp,R1,R2, Xperp_2,R2_2
-fit func(x) "geom-cal.dat" u (valid0($0)):($5) via Xperp,R1,R2, Xperp_2,R2_2, phi2k,phi1k
+fit func(x) "geom-cal.dat" u (valid0($0)):5 via Xperp,R1,R2, Xperp_2,R2_2, phi2k,phi1k
 
 valid_types(t)=only((t<3 || !noabs) && t>=0)
-fit func(x) "geom-cal.dat" u (valid0($0)):($5) via Xperp_0,R2_0
-fit func(x) "geom-cal.dat" u (valid0($0)):($5) via Xperp,R1,R2, Xperp_2,R2_2, Xperp_0,R2_0, phi2k,phi1k
-#fit func(x) "geom-cal.dat" u (valid0($0)):($5) via Xperp,R1,R2, Xperp_2,R2_2, Xperp_0,R2_0, phi2k,phi1k, Y0,xx0,yy0
+fit func(x) "geom-cal.dat" u (valid0($0)):5 via Xperp_0,R2_0
+fit func(x) "geom-cal.dat" u (valid0($0)):5 via Xperp,R1,R2, Xperp_2,R2_2, Xperp_0,R2_0, phi2k,phi1k
 
 noabs=0
-fit func(x) "geom-cal.dat" u (valid0($0)):5 via Y0,xx0
+#fit func(x) "geom-cal.dat" u (valid0($0)):5 via Y0,xx0
 fit func(x) "geom-cal.dat" u (valid0($0)):5 via Y0,xx0,yy0
 
-##fit func(x) "geom-cal.dat" u (valid0($0)):5 via Xperp,R1,R2, Xperp_2,R2_2, phi2k,phi1k, Y0,xx0,yy0
 fit func(x) "geom-cal.dat" u (valid0($0)):5 via R1, Xperp,R2, Xperp_2,R2_2, Xperp_0,R2_0, phi2k,phi1k, Y0,xx0,yy0
 
 # Xperp           = 86.0537          +/- 2.751        (3.196%)
