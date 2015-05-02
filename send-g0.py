@@ -10,7 +10,7 @@ from marlin_ak import *
 import time
 import math
 
-e_feedrate=0.2  # mm/sec, incoming filament
+e_feedrate=0.35  # mm/sec, incoming filament
 e_add = 0.
 
 def parseG(l):
@@ -55,7 +55,13 @@ z0=-8.1
 # large yellow sticky paper pad
 x0=-58.
 y0=113.5+0.23
-z0=-7.0
+z0=-10.1
+
+# large yellow sticky paper pad, new exrt
+x0=-65.
+y0=115.-1.5
+#z0=-9.85  # -10.25+0.35+0.05;   0.35 mm avg clearance
+z0=-9.2  # -9.4+0.35+0.05;   0.35 mm avg clearance
 
 print rr.geom.c2r(x0+2.85,y0,z0)
 
@@ -76,21 +82,24 @@ def prime_to_ABS(p):
   e0 += e_retract
   rr.go(x0+p[0]    , y0+p[1], z0+p[2], e0, f=1./3)  # move 5mm for 15s, extrusion part
 
-def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a new cut filament
+def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a newly cut filament
   global e0, e_retract
-  e_retract=15.
+  e_retract=1.5
   rr.go(x0+p[0]+5.+e_add1*5, y0+p[1], z0+p[2]+3., f=20, wait=True)
-  if rr.extrude: rr.c("M104 S240")
-  if rr.extrude: time.sleep(40.-2.)  # wait 40s
-  rr.go(x0+p[0]+15.+e_add1*5, y0+p[1], z0+p[2]+3., f=20)
+  if rr.extrude:
+    rr.c("M109 S190")  # set temp and wait
+    rr.wait()
+    #time.sleep(40.-2.)  # wait 40s
+  rr.go(x0+p[0]+12.+e_add1*5, y0+p[1], z0+p[2]+3., f=20)
   rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, f=5)
   e0 += e_retract-1
-  rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, e0, f=10)  # extruder move to -1mm (assuming -20mm initial position)
+  rr.go(x0+p[0]+10.+e_add1*5, y0+p[1], z0+p[2]+0.4, e0, f=5)  # extruder move to -1mm (assuming -e_retract mm initial position)
   e0 += 2*0.96+e_add1
   rr.go(x0+p[0]+0.4, y0+p[1], z0+p[2]+0.4, e0, f=1)  # move 5mm for 10s, extrude 2mm (1mm avg)
   e0 += 2*0.04
   rr.go(x0+p[0]    , y0+p[1], z0+p[2]    , e0, f=1.4142, wait=True)
-  if rr.extrude: rr.c("M104 S195")
+  if rr.extrude: rr.c("M104 S200")
+  #e_retract=6.  # !!!!!!!!!!!!!!!!!!!! remove
 
 def prime_to(p):
   prime_to_PLA(p)
@@ -157,12 +166,12 @@ try:
 
 finally:
   if pp!=None:
-    rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
+    rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
     e0 -= e_retract
-    rr.go(x = x0+pp[0], y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 5.)
     e_retract=0
+    rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 20)
     rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = e0+pp[3], f = 50.)
-    rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+30., e = e0+pp[3], f = 50., wait=True)
+    rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+20., e = e0+pp[3], f = 50., wait=True)
 
     if rr.extrude: rr.c("M104 S0")
 
