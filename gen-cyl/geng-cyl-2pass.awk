@@ -78,13 +78,14 @@ function getr1r2(z) {
 END {
   w=0.75; minw=0.55; h=0.2; h0=0.35; w0=1.6
   # kpd=0.77*0.86 *0.75; in_diam=2.9; ce=0
-  kpd=1.06 * (0.6/0.8) * (0.65/0.8*0+1); in_diam=2.875; ce=0  # PLA
+  kpd=1.0; in_diam=2.875; ce=0  # PLA
   in_area=in_diam^2 * pi/4
   delta = 0.9
 
   Di=5.0; Do=23.6
-  step=0.25
-  Z=2.0
+  step=0.15
+  Z=20.0
+#  Z=0.5
 
   r1 = (Di+w)/2; w1 = w
   r2 = (Do/2 - w/2)/2; w2 = Do/2 - r1 - w1/2

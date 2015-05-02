@@ -1,7 +1,7 @@
 set grid
 set key left top
 set y2tics
-set xrange [170e3:]
+set xrange [762e3:]
 t0=1.428e9
 
 set y2range [0:128]
