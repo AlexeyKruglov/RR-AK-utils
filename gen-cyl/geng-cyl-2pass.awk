@@ -110,7 +110,6 @@ END {
       calc_r_w()
     } else passes=1
     p2sincos(phi, r1,r2)
-    cw = i<=0 ? w0 : cw
 
 #    ipn = (i+n)%n; go(p2cos, p2sin, cz, cz-pz[ipn], cw); if (i>-n) pz[ipn]=cz
     if(i>0) ipn = (i+n)%n;
