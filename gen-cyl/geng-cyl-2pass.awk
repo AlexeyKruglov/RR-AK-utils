@@ -24,12 +24,14 @@ function p2sincos(phi,r1,r2) {
     p2cos = p2_r * cos(2*phi)
     cw = (p2_k*(w2-w1) + (w1+w2) )/2
   }
+  cw /= scale
 }
 
 BEGIN {
   from_file=0
   z0=0
   if(passes=="") passes=2
+  scale=1
 }
 
 /^[^#]/ {
@@ -73,12 +75,14 @@ function getr1r2(z) {
   Di = interp(z, tab_z[getr1r2_i-1], tab_z[getr1r2_i], tab_r1[getr1r2_i-1], tab_r1[getr1r2_i])
   Do = interp(z, tab_z[getr1r2_i-1], tab_z[getr1r2_i], tab_r2[getr1r2_i-1], tab_r2[getr1r2_i])
 
+  Di *= scale; Do *= scale
+
   calc_r_w()
   #print "#", z, Di,Do,r1,r2,w1,w2
 }
 
 END {
-  w=0.75; minw=0.55; h=0.15; h0=0.35; w0=1.6
+  w=0.75; minw=0.55; h=0.15; h0=0.5; w0=1.6
   # kpd=0.77*0.86 *0.75; in_diam=2.9; ce=0
   kpd=1.0; in_diam=2.875; ce=0  # PLA
   in_area=in_diam^2 * pi/4
@@ -94,9 +98,11 @@ END {
   if(poly+0==0) {
     n=int(pi*r2/step+1)*2*passes
     passes_base=2
+    scale=1
   } else {
     n=poly*passes
     passes_base=1
+    scale = 1/cos(pi/n)
     delta=0
   }
 
