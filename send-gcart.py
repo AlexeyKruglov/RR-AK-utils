@@ -33,7 +33,7 @@ rr.set_feedrate(100)
 rr.c("G92 E0")
 e0=0
 e_retract=0  # initialized by prime_to()
-rr.c("M302")
+rr.c("M84 S0")  # hold z
 
 rr.home()
 #rr.pick_pos()
@@ -144,11 +144,6 @@ try:
 
     cdist = dist(pp[0:2], cp[0:2])
     edist = cp[3] - pp[3]
-
-    if False:  # feedrate calculation moved to const-flow.awk
-      if edist < 1e-6: edist = 1e-6
-      cfeedrate = e_feedrate * cdist/edist  # in mm/sec in horizontal plane
-      if cfeedrate > 149.: cfeedrate = 149.
 
     #cp_corr = correct_pull(cp, pp, edist/e_feedrate)
 
