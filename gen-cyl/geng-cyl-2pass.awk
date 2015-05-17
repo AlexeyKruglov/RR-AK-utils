@@ -120,8 +120,8 @@ END {
       #cr = (ra + (rd+add_r)*cos(phiw)
     }
     if(i<=0 && from_file) {
-      Do = (Di+Do)/2 + w0
-      Di = Do - 2*w0
+      Do = (Di+Do)/2 + w0*scale
+      Di = Do - 2*w0*scale
       passes=passes_base
       calc_r_w()
     } else passes=passes_bulk
