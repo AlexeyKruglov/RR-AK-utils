@@ -39,6 +39,9 @@ class RobotGeometryAK(RobotGeometryBase):
   #Xperp_probe     = 88.0685         # +/- 1.999        (2.27%)
   #R2_probe        = 74.3336         # +/- 1.447        (1.946%)
 
+  dR2_dz = 0.0384
+  R2dphi2_dz = 0.0001
+
   # additive const: z shift at x=y=0
   #z0  = -6.11831  # mm(Z)
   #z0  = -5.44919
@@ -90,12 +93,21 @@ class RobotGeometryAK(RobotGeometryBase):
     Z0 = p2skew + plane + warp + (ws*sin(2*pi*Y/wp) + wc*cos(2*pi*Y/wp)) * plane2 + self.z0
     return Z0
 
-  def r2c_approx(self, X,Y,Z):
-    phi1=(Y-self.Yperp)/self.phi1k  #+pi/2
-    phi2=(X-self.Xperp)/self.phi2k-pi/2
+  def zskew_corr(self, Z):
+    x2_corr = self.R2 + self.dR2_dz * Z
+    y2_corr =           self.R2dphi2_dz/self.R2 * Z
+    R2_corr = sqrt(x2_corr**2 + y2_corr**2)
+    Xperp_corr = self.Xperp - self.phi2k * atan2(y2_corr, x2_corr)
+    return (R2_corr, Xperp_corr)
 
-    x=self.R1*cos(phi1) + self.R2*cos(phi1+phi2) + self.xx0
-    y=self.R1*sin(phi1) + self.R2*sin(phi1+phi2) + self.yy0
+  def r2c_approx(self, X,Y,Z):
+    R2_corr, Xperp_corr = self.zskew_corr(Z)
+
+    phi1=(Y-self.Yperp)/self.phi1k  #+pi/2
+    phi2=(X-Xperp_corr)/self.phi2k-pi/2
+
+    x=self.R1*cos(phi1) + R2_corr*cos(phi1+phi2) + self.xx0
+    y=self.R1*sin(phi1) + R2_corr*sin(phi1+phi2) + self.yy0
     z=Z
 
     return (x,y,z)
@@ -107,9 +119,12 @@ class RobotGeometryAK(RobotGeometryBase):
     r2=x**2+y**2
     r=sqrt(r2)
     phi=atan2(y,x)
-    psi1= acos( (self.R1**2+r2-self.R2**2)/(2*self.R1*r))
-    psi2=-acos(-(self.R1**2+self.R2**2-r2)/(2*self.R2*self.R1))
-    X=(psi2+pi/2)*self.phi2k + self.Xperp
+
+    R2_corr, Xperp_corr = self.zskew_corr(Z)
+
+    psi1= acos( (self.R1**2+r2-R2_corr**2)/(2*self.R1*r))
+    psi2=-acos(-(self.R1**2+R2_corr**2-r2)/(2*R2_corr*self.R1))
+    X=(psi2+pi/2)*self.phi2k + Xperp_corr
     # Y=(phi+psi1-pi/2)*self.phi1k + self.Yperp
     Y=(phi+psi1)*self.phi1k + self.Yperp
     return (X,Y,Z)
