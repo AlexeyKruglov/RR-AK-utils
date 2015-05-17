@@ -12,10 +12,13 @@ function parse_GC() {
   }
   order_n=NF
 
-  if ("X" in f) cx=f["X"]+0; if(cx=="") cx=px
-  if ("Y" in f) cy=f["Y"]+0; if(cy=="") cy=py
-  if ("Z" in f) cz=f["Z"]+0; if(cz=="") cz=pz
-  if ("E" in f) ce=f["E"]+0; if(ce=="") ce=pe
+  if("X" in f) cx=f["X"]+0; if(cx=="") cx=px
+  if("Y" in f) cy=f["Y"]+0; if(cy=="") cy=py
+  if("Z" in f) cz=f["Z"]+0; if(cz=="") cz=pz
+  if("E" in f) ce=f["E"]+0; if(ce=="") ce=pe
+  if("G" in f) cG="G" f["G"]
+  else if("M" in f) cG="M"f["M"]
+  else cG=""
 }
 
 function format_GC() {
