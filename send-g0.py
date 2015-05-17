@@ -61,7 +61,7 @@ z0=-10.1
 x0=-65.
 y0=115.-1.5
 #z0=-9.85  # -10.25+0.35+0.05;   0.35 mm avg clearance
-z0=-9.2  # -9.4+0.35+0.05;   0.35 mm avg clearance
+z0=-9.45  # -9.4+0.35+0.05;   0.35 mm avg clearance
 
 print rr.geom.c2r(x0+2.85,y0,z0)
 

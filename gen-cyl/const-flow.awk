@@ -3,7 +3,7 @@
 @include "GC-parser.awkinc"
 
 BEGIN {
-  erate = 0.2 * 1.  # mm/sec
+  erate = 1.0 * 1.  # mm/sec
   maxc = 150  # mm/sec -- xy speed without extrusion (or max xy speed for backward e motion)
 
   pe=0

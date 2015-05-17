@@ -82,7 +82,7 @@ function getr1r2(z) {
 }
 
 END {
-  w=0.75; minw=0.55; h=0.15; h0=0.5; w0=1.6
+  w=0.75; minw=0.55; h=0.2; h0=0.5; w0=1.6
   # kpd=0.77*0.86 *0.75; in_diam=2.9; ce=0
   kpd=1.0; in_diam=2.875; ce=0  # PLA
   in_area=in_diam^2 * pi/4

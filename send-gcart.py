@@ -84,10 +84,10 @@ def prime_to_ABS(p):
 
 def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a newly cut filament
   global e0, e_retract
-  e_retract=1.5
+  e_retract=2.0
   rr.go(x0+p[0]+5.+e_add1*5, y0+p[1], z0+p[2]+3., f=20, wait=True)
   if rr.extrude:
-    rr.c("M109 S190")  # set temp and wait
+    rr.c("M109 S185")  # set temp and wait
     rr.wait()
     #time.sleep(40.-2.)  # wait 40s
   rr.go(x0+p[0]+12.+e_add1*5, y0+p[1], z0+p[2]+3., f=20)
@@ -98,7 +98,7 @@ def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a newly cut fil
   rr.go(x0+p[0]+0.4, y0+p[1], z0+p[2]+0.4, e0, f=1)  # move 5mm for 10s, extrude 2mm (1mm avg)
   e0 += 2*0.04
   rr.go(x0+p[0]    , y0+p[1], z0+p[2]    , e0, f=1.4142, wait=True)
-  if rr.extrude: rr.c("M104 S200")
+  if rr.extrude: rr.c("M104 S185")
   #e_retract=6.  # !!!!!!!!!!!!!!!!!!!! remove
 
 def prime_to(p):
@@ -164,7 +164,7 @@ finally:
     rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
     e0 -= e_retract
     e_retract=0
-    rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 20)
+    rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 25)
     rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+2. , e = e0+pp[3], f = 50.)
     rr.go(x = x0+pp[0]+5., y = y0+pp[1], z = z0+pp[2]+20., e = e0+pp[3], f = 50., wait=True)
 
