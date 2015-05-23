@@ -33,6 +33,7 @@ rr.set_feedrate(100)
 rr.c("G92 E0")
 e0=0
 e_retract=0  # initialized by prime_to()
+e_retract_final=True  # True = need retract after successful print
 rr.c("M84 S0")  # hold z
 
 rr.home()
@@ -101,8 +102,24 @@ def prime_to_PLA(p, e_add1 = e_add):   # e_add = 2 when init'ing a newly cut fil
   if rr.extrude: rr.c("M104 S185")
   #e_retract=6.  # !!!!!!!!!!!!!!!!!!!! remove
 
+def prime_to_Skeinforge(p):
+  global x0,y0,e0, e_retract
+
+  e_retract=2.5
+  e_retract_final = False
+  x0=y0=0  # assume it is already shifted by optrot.sh script
+  # But leave z0
+
+  rr.go(x0+p[0]+5., y0+p[1], z0+p[2]+3., f=20, wait=True)
+  if rr.extrude:
+    rr.c("M109 S185")  # set temp and wait
+    rr.wait()
+    #time.sleep(40.-2.)  # wait 40s
+  # e0 += 0  # we need not increase e0 by e_retract
+  rr.go(x0+p[0], y0+p[1], z0+p[2], e0, f=20, wait=True)
+
 def prime_to(p):
-  prime_to_PLA(p)
+  prime_to_Skeinforge(p)
 
 
 pp_corr = None
@@ -120,7 +137,7 @@ def correct_pull(cp, pp, dt):
   pp_corr=cp_corrr
   return p2
 
-pp=None
+pp=[None, None, None, 0]
 order=dict()
 order['X']=0
 order['Y']=1
@@ -129,6 +146,8 @@ order['E']=3
 
 try:
  for l in inf:
+  if l[:2]!="G1" and l[:2]!="G4":
+    continue
   l = l[:-1]
   print l
   lp=parseG(l)
@@ -136,7 +155,7 @@ try:
     print lp
     cp = map(lambda x: lp[x] if (x in lp) else pp[order[x]], ['X','Y','Z','E'])
 
-    if pp==None:
+    if pp[0]==None:
       prime_to(cp[0:3])
       e0 -= cp[3]
       pp=cp
@@ -152,13 +171,20 @@ try:
     else:
       cfeedrate = None
 
-    print "go %.3f %.3f %.3f %.3f @ %.2f" % (cp[0], cp[1], cp[2], cp[3], cfeedrate)
+    print "go %.3f %.3f %.3f %.3f @ %.2f" % (cp[0], cp[1], cp[2], cp[3], cfeedrate or 0.)
     rr.go(x = x0+cp[0], y = y0+cp[1], z = z0+cp[2], e = e0+cp[3], f = cfeedrate)
 
     pp=cp
   elif 'G' in lp and lp['G']==4.:
     rr.c(l)
 
+ if not e_retract_final:
+    e_retract = 0
+
+except Exception as e:
+  import traceback
+  traceback.print_exc()
+  #print e
 finally:
   if pp!=None:
     rr.go(x = x0+pp[0]+2., y = y0+pp[1], z = z0+pp[2]+2, e = e0+pp[3], f = 50.)
