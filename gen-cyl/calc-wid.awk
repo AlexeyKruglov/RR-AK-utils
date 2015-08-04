@@ -3,7 +3,10 @@
 @include "GC-parser.awkinc"
 
 BEGIN {
-  erate = 1.0 * 1.  # mm/sec
+  hlayer = 0.2  # mm, nominal layer height -- used in track width calculation
+  R0 = 2.875
+  pi = atan2(1,1)*4
+  S0 = pi/4 * R0^2
   maxc = 150  # mm/sec -- xy speed without extrusion (or max xy speed for backward e motion)
 
   pe=0
@@ -17,25 +20,16 @@ function abs(x) { return x>0?x:-x }
   parse_GC()
 }
 
-/^G1 / {
+/^G[01] / {
   cdist = sqrt((cx-px)^2 + (cy-py)^2)
   edist = ce-pe
 }
 
-/^G1 / && ce>pe {
+/^G[01] / {
   processed = 1
-  f["F"] = erate / edist * cdist
-  f["F"] *= 60  # convert to mm/min
+  cw = S0 * edist / hlayer / (cdist + 1e-10)
 
-  print format_GC()
-}
-
-/^G1 / && ce<=pe {
-  processed = 1
-  cf = erate / (abs(edist) + 1e-10) * cdist
-  if(cf > maxc) cf = maxc
-
-  f["F"] = cf * 60  # convert to mm/min
+  f["W"] = cw  # mm
 
   print format_GC()
 }
