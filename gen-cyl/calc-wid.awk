@@ -28,8 +28,10 @@ function abs(x) { return x>0?x:-x }
 /^G[01] / {
   processed = 1
   cw = S0 * edist / hlayer / (cdist + 1e-10)
+  cflow  = S0 * f["F"]/60. * edist / (cdist + 1e-10)
 
   f["W"] = cw  # mm
+  if("F" in f) f["R"] = cflow  # mm^3/sec
 
   print format_GC()
 }
